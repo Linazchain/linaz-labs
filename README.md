@@ -167,7 +167,9 @@ If you are a protocol team who wants to be the execution layer behind inevitable
 # Contact
 
 Gmail: gabychancer357@gmail.com 
+
 WhatsApp: +260974383918
-discord: gabychancer357
+
+Discord: gabychancer357
 
 # Linaz. Value that knows what it's supposed to do.
