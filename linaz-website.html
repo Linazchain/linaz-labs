@@ -1,0 +1,1302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Linaz — Value That Knows What It's Supposed To Do</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Instrument+Serif:ital@0;1&family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black:   #07080A;
+    --white:   #F0EDE6;
+    --acid:    #D4F53C;
+    --teal:    #2DFFC4;
+    --red:     #FF4444;
+    --muted:   #52574A;
+    --surface: #0F1113;
+    --border:  #1C2024;
+    --text:    #A8A99E;
+  }
+
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--black);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    line-height: 1.6;
+    font-size: 15px;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+    cursor: none;
+  }
+
+  /* ── CUSTOM CURSOR ── */
+  .cursor {
+    position: fixed;
+    width: 8px;
+    height: 8px;
+    background: var(--acid);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9999;
+    transition: transform 0.15s ease;
+    mix-blend-mode: difference;
+  }
+  .cursor-ring {
+    position: fixed;
+    width: 32px;
+    height: 32px;
+    border: 1px solid rgba(212,245,60,0.4);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9998;
+    transition: all 0.2s ease;
+  }
+
+  /* ── GRAIN OVERLAY ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 100;
+    opacity: 0.5;
+  }
+
+  /* ── LAYOUT ── */
+  .wrap { max-width: 1100px; margin: 0 auto; padding: 0 40px; }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 50;
+    padding: 24px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid transparent;
+    transition: all 0.3s ease;
+  }
+  nav.scrolled {
+    background: rgba(7,8,10,0.92);
+    border-color: var(--border);
+    backdrop-filter: blur(12px);
+  }
+
+  .logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px;
+    letter-spacing: 0.08em;
+    color: var(--white);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .logo-dot {
+    width: 8px;
+    height: 8px;
+    background: var(--acid);
+    border-radius: 50%;
+    animation: pulse 2s ease infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(0.8); }
+  }
+
+  .nav-tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    color: var(--acid);
+    border: 1px solid rgba(212,245,60,0.3);
+    padding: 6px 14px;
+    border-radius: 2px;
+    text-transform: uppercase;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 0 40px 80px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-bg {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 60% 50% at 70% 40%, rgba(212,245,60,0.04) 0%, transparent 70%),
+      radial-gradient(ellipse 40% 60% at 20% 80%, rgba(45,255,196,0.03) 0%, transparent 60%);
+  }
+
+  .hero-counter {
+    position: absolute;
+    top: 50%;
+    right: 40px;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+    align-items: flex-end;
+  }
+
+  .counter-item {
+    text-align: right;
+    opacity: 0;
+    animation: fadeIn 0.8s ease forwards;
+  }
+  .counter-item:nth-child(1) { animation-delay: 1s; }
+  .counter-item:nth-child(2) { animation-delay: 1.2s; }
+  .counter-item:nth-child(3) { animation-delay: 1.4s; }
+
+  .counter-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(36px, 5vw, 56px);
+    color: var(--white);
+    line-height: 1;
+    letter-spacing: 0.02em;
+  }
+  .counter-num span { color: var(--acid); }
+  .counter-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.15em;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-top: 4px;
+  }
+
+  .hero-eyebrow {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: var(--acid);
+    text-transform: uppercase;
+    margin-bottom: 24px;
+    opacity: 0;
+    animation: slideUp 0.7s ease 0.2s forwards;
+  }
+
+  .hero-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(64px, 10vw, 140px);
+    line-height: 0.92;
+    letter-spacing: 0.01em;
+    color: var(--white);
+    max-width: 700px;
+    opacity: 0;
+    animation: slideUp 0.7s ease 0.3s forwards;
+  }
+  .hero-title em {
+    font-family: 'Instrument Serif', serif;
+    font-style: italic;
+    color: var(--acid);
+  }
+
+  .hero-sub {
+    margin-top: 32px;
+    font-size: 16px;
+    color: var(--text);
+    max-width: 480px;
+    line-height: 1.7;
+    font-weight: 300;
+    opacity: 0;
+    animation: slideUp 0.7s ease 0.5s forwards;
+  }
+
+  .hero-actions {
+    margin-top: 40px;
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    opacity: 0;
+    animation: slideUp 0.7s ease 0.7s forwards;
+  }
+
+  .btn-primary {
+    background: var(--acid);
+    color: var(--black);
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 14px 28px;
+    border: none;
+    cursor: none;
+    text-decoration: none;
+    display: inline-block;
+    transition: all 0.2s ease;
+  }
+  .btn-primary:hover { background: var(--white); transform: translateY(-2px); }
+
+  .btn-ghost {
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    text-decoration: none;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 2px;
+    transition: all 0.2s ease;
+  }
+  .btn-ghost:hover { color: var(--white); border-color: var(--white); }
+
+  .scroll-hint {
+    position: absolute;
+    bottom: 32px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    opacity: 0;
+    animation: fadeIn 1s ease 1.5s forwards;
+  }
+  .scroll-line {
+    width: 1px;
+    height: 48px;
+    background: linear-gradient(to bottom, var(--acid), transparent);
+    animation: scrollPulse 2s ease infinite;
+  }
+  @keyframes scrollPulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+  .scroll-text {
+    font-family: 'DM Mono', monospace;
+    font-size: 8px;
+    letter-spacing: 0.2em;
+    color: var(--muted);
+    text-transform: uppercase;
+    writing-mode: vertical-rl;
+  }
+
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  /* ── TICKER ── */
+  .ticker {
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    padding: 14px 0;
+    overflow: hidden;
+    background: var(--surface);
+  }
+  .ticker-track {
+    display: flex;
+    gap: 0;
+    animation: ticker 20s linear infinite;
+    width: max-content;
+  }
+  .ticker-item {
+    display: flex;
+    align-items: center;
+    gap: 32px;
+    padding: 0 40px;
+    white-space: nowrap;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .ticker-item span { color: var(--acid); }
+  .ticker-dot {
+    width: 4px; height: 4px;
+    background: var(--border);
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  @keyframes ticker {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+
+  /* ── SECTIONS ── */
+  section { padding: 120px 0; }
+
+  .section-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--acid);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+    max-width: 60px;
+  }
+
+  h2 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(48px, 7vw, 88px);
+    line-height: 0.95;
+    letter-spacing: 0.01em;
+    color: var(--white);
+    margin-bottom: 32px;
+  }
+  h2 em {
+    font-family: 'Instrument Serif', serif;
+    font-style: italic;
+    color: var(--acid);
+  }
+
+  /* ── STORY SECTION ── */
+  .story {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    align-items: start;
+  }
+
+  .story-text p {
+    font-size: 16px;
+    line-height: 1.8;
+    color: var(--text);
+    margin-bottom: 20px;
+  }
+  .story-text strong { color: var(--white); font-weight: 500; }
+  .story-text em { color: var(--acid); font-style: normal; }
+
+  .story-stat {
+    border: 1px solid var(--border);
+    background: var(--surface);
+    padding: 32px;
+    margin-bottom: 16px;
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.3s ease;
+  }
+  .story-stat:hover { border-color: rgba(212,245,60,0.3); }
+  .story-stat::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 3px;
+    height: 100%;
+    background: var(--acid);
+  }
+
+  .stat-number {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 52px;
+    line-height: 1;
+    color: var(--white);
+    letter-spacing: 0.02em;
+  }
+  .stat-number span { color: var(--acid); }
+  .stat-desc {
+    font-size: 13px;
+    color: var(--muted);
+    margin-top: 8px;
+    line-height: 1.5;
+  }
+  .stat-compare {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--teal);
+    letter-spacing: 0.1em;
+    margin-top: 10px;
+    text-transform: uppercase;
+  }
+
+  /* ── HOW IT WORKS ── */
+  .how-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    margin-top: 60px;
+  }
+
+  .how-card {
+    background: var(--surface);
+    padding: 40px 32px;
+    position: relative;
+    transition: background 0.3s ease;
+  }
+  .how-card:hover { background: #141719; }
+
+  .how-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 80px;
+    line-height: 1;
+    color: var(--border);
+    position: absolute;
+    top: 16px;
+    right: 20px;
+    letter-spacing: 0.02em;
+    transition: color 0.3s ease;
+  }
+  .how-card:hover .how-num { color: rgba(212,245,60,0.08); }
+
+  .how-icon {
+    width: 40px;
+    height: 40px;
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+    font-size: 18px;
+  }
+
+  .how-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 24px;
+    letter-spacing: 0.04em;
+    color: var(--white);
+    margin-bottom: 12px;
+  }
+
+  .how-desc {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.7;
+  }
+
+  /* ── DEMO SECTION ── */
+  .demo-section {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 0;
+    padding: 60px;
+    margin-top: 60px;
+    position: relative;
+    overflow: hidden;
+  }
+  .demo-section::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(to right, transparent, var(--acid), transparent);
+  }
+
+  .demo-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    color: var(--acid);
+    text-transform: uppercase;
+    margin-bottom: 32px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .demo-label::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    background: var(--acid);
+    border-radius: 50%;
+    animation: pulse 1.5s ease infinite;
+  }
+
+  .demo-input-area {
+    background: var(--black);
+    border: 1px solid var(--border);
+    padding: 24px 28px;
+    margin-bottom: 24px;
+    position: relative;
+  }
+
+  .demo-prompt {
+    font-family: 'Instrument Serif', serif;
+    font-size: 22px;
+    color: var(--white);
+    line-height: 1.5;
+    font-style: italic;
+  }
+  .demo-prompt .typed-cursor {
+    color: var(--acid);
+    animation: blink 1s step-end infinite;
+  }
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+  }
+
+  .demo-flow {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 0;
+    margin-top: 32px;
+  }
+
+  .demo-step {
+    padding: 20px 16px;
+    border: 1px solid var(--border);
+    margin-right: -1px;
+    text-align: center;
+    position: relative;
+    transition: all 0.3s ease;
+  }
+  .demo-step.active {
+    border-color: var(--acid);
+    background: rgba(212,245,60,0.04);
+    z-index: 1;
+  }
+  .demo-step-icon { font-size: 20px; margin-bottom: 8px; }
+  .demo-step-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.12em;
+    color: var(--muted);
+    text-transform: uppercase;
+    line-height: 1.4;
+  }
+  .demo-step.active .demo-step-label { color: var(--acid); }
+
+  .demo-result {
+    margin-top: 24px;
+    padding: 20px 24px;
+    background: rgba(45,255,196,0.04);
+    border: 1px solid rgba(45,255,196,0.2);
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .demo-result-icon { font-size: 20px; }
+  .demo-result-text {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    color: var(--teal);
+    letter-spacing: 0.05em;
+  }
+
+  /* ── COMPARISON ── */
+  .comparison-wrap { margin-top: 60px; overflow-x: auto; }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+  thead th {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+    padding: 14px 20px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+  }
+  thead th:first-child { color: var(--text); }
+  thead th.highlight { color: var(--acid); }
+
+  tbody td {
+    padding: 14px 20px;
+    border-bottom: 1px solid rgba(28,32,36,0.6);
+    color: var(--muted);
+    vertical-align: middle;
+  }
+  tbody td:first-child { color: var(--text); font-weight: 400; }
+  tbody tr:hover td { background: rgba(255,255,255,0.01); }
+  tbody tr:last-child td { border-bottom: none; }
+
+  .check { color: var(--acid); font-size: 16px; }
+  .cross { color: rgba(255,68,68,0.5); font-size: 16px; }
+  .partial { color: #FFB830; font-size: 13px; }
+
+  /* ── PRINCIPLES ── */
+  .principles-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    margin-top: 60px;
+  }
+
+  .principle {
+    background: var(--surface);
+    padding: 40px;
+    transition: background 0.3s ease;
+  }
+  .principle:hover { background: #141719; }
+
+  .principle-mark {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 13px;
+    letter-spacing: 0.15em;
+    color: var(--acid);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .principle-mark::before {
+    content: '';
+    width: 20px;
+    height: 1px;
+    background: var(--acid);
+  }
+
+  .principle-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 32px;
+    letter-spacing: 0.03em;
+    color: var(--white);
+    line-height: 1;
+    margin-bottom: 16px;
+  }
+
+  .principle-desc {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.7;
+  }
+
+  /* ── STATUS ── */
+  .status-grid {
+    margin-top: 60px;
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+  }
+
+  .status-row {
+    background: var(--surface);
+    padding: 20px 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    transition: background 0.2s ease;
+  }
+  .status-row:hover { background: #141719; }
+
+  .status-name {
+    font-size: 14px;
+    color: var(--text);
+    font-weight: 400;
+  }
+
+  .status-badge {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 5px 12px;
+    border-radius: 2px;
+    white-space: nowrap;
+  }
+  .status-badge.done {
+    background: rgba(212,245,60,0.1);
+    color: var(--acid);
+    border: 1px solid rgba(212,245,60,0.2);
+  }
+  .status-badge.progress {
+    background: rgba(45,255,196,0.08);
+    color: var(--teal);
+    border: 1px solid rgba(45,255,196,0.2);
+  }
+  .status-badge.soon {
+    background: rgba(82,87,74,0.2);
+    color: var(--muted);
+    border: 1px solid var(--border);
+  }
+
+  /* ── CTA ── */
+  .cta-section {
+    padding: 120px 0;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .cta-section::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, rgba(212,245,60,0.05) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .cta-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(56px, 9vw, 120px);
+    line-height: 0.92;
+    color: var(--white);
+    letter-spacing: 0.01em;
+    margin-bottom: 32px;
+  }
+  .cta-title em {
+    font-family: 'Instrument Serif', serif;
+    font-style: italic;
+    color: var(--acid);
+  }
+
+  .cta-sub {
+    font-size: 16px;
+    color: var(--muted);
+    max-width: 400px;
+    margin: 0 auto 40px;
+    line-height: 1.7;
+  }
+
+  .cta-links {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+
+  .footer-logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    letter-spacing: 0.08em;
+    color: var(--white);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .footer-right {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+    text-align: right;
+    line-height: 1.8;
+  }
+
+  /* ── SCROLL REVEAL ── */
+  .reveal {
+    opacity: 0;
+    transform: translateY(32px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 768px) {
+    .wrap { padding: 0 20px; }
+    nav { padding: 20px; }
+    .hero { padding: 0 20px 60px; }
+    .hero-counter { display: none; }
+    .story { grid-template-columns: 1fr; gap: 40px; }
+    .how-grid { grid-template-columns: 1fr; }
+    .demo-flow { grid-template-columns: repeat(3, 1fr); }
+    .principles-grid { grid-template-columns: 1fr; }
+    .demo-section { padding: 32px 24px; }
+    footer { padding: 32px 20px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- CURSOR -->
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- NAV -->
+<nav id="nav">
+  <div class="logo">
+    <div class="logo-dot"></div>
+    LINAZ
+  </div>
+  <span class="nav-tag">Pre-Testnet · 2025</span>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+
+  <div class="hero-counter">
+    <div class="counter-item">
+      <div class="counter-num">$700<span>B</span></div>
+      <div class="counter-label">Annual remittance flows</div>
+    </div>
+    <div class="counter-item">
+      <div class="counter-num">800<span>M</span></div>
+      <div class="counter-label">People sending money home</div>
+    </div>
+    <div class="counter-item">
+      <div class="counter-num">$42<span>B</span></div>
+      <div class="counter-label">Lost in fees every year</div>
+    </div>
+  </div>
+
+  <div class="hero-eyebrow">Intent & Outcome Execution Network</div>
+
+  <h1 class="hero-title">
+    Value that<br>
+    knows what<br>
+    it's <em>supposed</em><br>
+    to do.
+  </h1>
+
+  <p class="hero-sub">
+    The first network where you declare what you want to be financially true — and the system makes it happen completely and safely. Or not at all.
+  </p>
+
+  <div class="hero-actions">
+    <a href="#how" class="btn-primary">See How It Works</a>
+    <a href="https://github.com/Linaz" class="btn-ghost" target="_blank">View GitHub →</a>
+  </div>
+
+  <div class="scroll-hint">
+    <div class="scroll-line"></div>
+    <span class="scroll-text">Scroll</span>
+  </div>
+</section>
+
+<!-- TICKER -->
+<div class="ticker">
+  <div class="ticker-track">
+    <!-- repeated twice for seamless loop -->
+    <div class="ticker-item"><span>$700B</span> in annual remittances<div class="ticker-dot"></div></div>
+    <div class="ticker-item"><span>800M</span> people affected<div class="ticker-dot"></div></div>
+    <div class="ticker-item"><span>$42B</span> extracted in fees<div class="ticker-dot"></div></div>
+    <div class="ticker-item">Atomic execution<div class="ticker-dot"></div></div>
+    <div class="ticker-item">Zero complexity for users<div class="ticker-dot"></div></div>
+    <div class="ticker-item">Programmable asset behavior<div class="ticker-dot"></div></div>
+    <div class="ticker-item">Built from <span>Zambia</span><div class="ticker-dot"></div></div>
+    <div class="ticker-item">For the next billion<div class="ticker-dot"></div></div>
+    <div class="ticker-item"><span>$700B</span> in annual remittances<div class="ticker-dot"></div></div>
+    <div class="ticker-item"><span>800M</span> people affected<div class="ticker-dot"></div></div>
+    <div class="ticker-item"><span>$42B</span> extracted in fees<div class="ticker-dot"></div></div>
+    <div class="ticker-item">Atomic execution<div class="ticker-dot"></div></div>
+    <div class="ticker-item">Zero complexity for users<div class="ticker-dot"></div></div>
+    <div class="ticker-item">Programmable asset behavior<div class="ticker-dot"></div></div>
+    <div class="ticker-item">Built from <span>Zambia</span><div class="ticker-dot"></div></div>
+    <div class="ticker-item">For the next billion<div class="ticker-dot"></div></div>
+  </div>
+</div>
+
+<!-- THE PROBLEM -->
+<section>
+  <div class="wrap">
+    <div class="reveal">
+      <div class="section-label">01 · The Problem</div>
+    </div>
+    <div class="story">
+      <div class="story-text reveal">
+        <h2>Crypto promised <em>freedom.</em> It delivered complexity.</h2>
+        <p>Imagine you're a nurse in Manila. Every month you take <strong>$300 — two weeks of 12 hour shifts</strong> — and walk into a Western Union. Before it crosses a single border, <em>$35 is already gone.</em> Four hours of your life. Taken. Before your mother sees a cent.</p>
+        <p>You heard crypto was different. You tried it. One wrong character in a 42-digit address and <strong>$300 disappeared in four seconds.</strong> No reversal. No recourse. No one to call.</p>
+        <p>You went back to Western Union.</p>
+        <p>She is not one woman. She is <em>800 million people.</em> And crypto has failed every single one of them — not because the technology was wrong, but because nobody finished building it.</p>
+        <p><strong>Every protocol tells you how to move money. Not one guarantees where it arrives.</strong></p>
+      </div>
+      <div class="story-stats reveal">
+        <div class="story-stat">
+          <div class="stat-number">$42<span>B</span></div>
+          <div class="stat-desc">Extracted in fees from remittance flows every single year</div>
+          <div class="stat-compare">↑ Larger than the GDP of 100 countries</div>
+        </div>
+        <div class="story-stat">
+          <div class="stat-number">8<span>%</span></div>
+          <div class="stat-desc">Average fee to send money across borders</div>
+          <div class="stat-compare">↑ Hedge funds pay near zero for the same transfer</div>
+        </div>
+        <div class="story-stat">
+          <div class="stat-number">4<span>sec</span></div>
+          <div class="stat-desc">How long it takes to lose everything to a wrong address</div>
+          <div class="stat-compare">↑ No reversal. No recourse. No one to call.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section id="how" style="background: var(--surface); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);">
+  <div class="wrap">
+    <div class="reveal">
+      <div class="section-label">02 · How It Works</div>
+      <h2>You say what you want.<br><em>Linaz makes it true.</em></h2>
+    </div>
+
+    <div class="how-grid reveal">
+      <div class="how-card">
+        <div class="how-num">01</div>
+        <div class="how-icon">✦</div>
+        <div class="how-title">Express The Intent</div>
+        <div class="how-desc">Type what you want in plain language. No gas settings. No chain selection. No 42-character addresses. Just your goal.</div>
+      </div>
+      <div class="how-card">
+        <div class="how-num">02</div>
+        <div class="how-icon">⟡</div>
+        <div class="how-title">Solvers Compete</div>
+        <div class="how-desc">Specialized automated solvers race to find the fastest, safest, cheapest path to your outcome. Like Bitcoin miners but for goals.</div>
+      </div>
+      <div class="how-card">
+        <div class="how-num">03</div>
+        <div class="how-icon">◈</div>
+        <div class="how-title">Atomic Execution</div>
+        <div class="how-desc">Every step completes perfectly or everything reverses completely. There is no state where you lose money to a mistake.</div>
+      </div>
+    </div>
+
+    <!-- DEMO -->
+    <div class="demo-section reveal">
+      <div class="demo-label">Live Intent Demo</div>
+      <div class="demo-input-area">
+        <div class="demo-prompt" id="demoText">"Send $300 to Mom. Keep it safe. Bring it back if she doesn't confirm."<span class="typed-cursor">|</span></div>
+      </div>
+      <div class="demo-flow">
+        <div class="demo-step active" id="step1">
+          <div class="demo-step-icon">📝</div>
+          <div class="demo-step-label">Intent Compiled</div>
+        </div>
+        <div class="demo-step" id="step2">
+          <div class="demo-step-icon">⚡</div>
+          <div class="demo-step-label">Solvers Racing</div>
+        </div>
+        <div class="demo-step" id="step3">
+          <div class="demo-step-icon">🔒</div>
+          <div class="demo-step-label">Atomically Executing</div>
+        </div>
+        <div class="demo-step" id="step4">
+          <div class="demo-step-icon">✓</div>
+          <div class="demo-step-label">Proof Verified</div>
+        </div>
+        <div class="demo-step" id="step5">
+          <div class="demo-step-icon">💚</div>
+          <div class="demo-step-label">Outcome Achieved</div>
+        </div>
+      </div>
+      <div class="demo-result" id="demoResult" style="display:none;">
+        <div class="demo-result-icon">✦</div>
+        <div class="demo-result-text">$300 delivered to Mom in 4 seconds · Full reversal available for 24 hours · Zero complexity for the sender</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- COMPARISON -->
+<section>
+  <div class="wrap">
+    <div class="reveal">
+      <div class="section-label">03 · Competitive Landscape</div>
+      <h2>They built the pipes.<br><em>Linaz turns on the tap.</em></h2>
+    </div>
+    <div class="comparison-wrap reveal">
+      <table>
+        <thead>
+          <tr>
+            <th>Capability</th>
+            <th class="highlight">Linaz</th>
+            <th>UniswapX</th>
+            <th>CoW Protocol</th>
+            <th>Anoma</th>
+            <th>Traditional Crypto</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>General outcome execution</td>
+            <td><span class="check">✦</span></td>
+            <td><span class="cross">✕</span></td>
+            <td><span class="cross">✕</span></td>
+            <td><span class="partial">⚠ Partial</span></td>
+            <td><span class="cross">✕</span></td>
+          </tr>
+          <tr>
+            <td>Natural language intents</td>
+            <td><span class="check">✦</span></td>
+            <td><span class="cross">✕</span></td>
+            <td><span class="cross">✕</span></td>
+            <td><span class="cross">✕</span></td>
+            <td><span class="cross">✕</span></td>
+          </tr>
+          <tr>
+            <td>Programmable asset behavior</td>
+            <td><span class="check">✦</span></td>
+            <td><span class="cross">✕</span></td>
+            <td><span class="cross">✕</span></td>
+            <td><span class="cross">✕</span></td>
+            <td><span class="cross">✕</span></td>
+          </tr>
+          <tr>
+            <td>Reversible transfers</td>
+            <td><span class="check">✦</span></td>
+            <td><span class="cross">✕</span></td>
+            <td><span class="cross">✕</span></td>
+            <td><span class="cross">✕</span></td>
+            <td><span class="cross">✕</span></td>
+          </tr>
+          <tr>
+            <td>Cross-chain without a bridge</td>
+            <td><span class="check">✦</span></td>
+            <td><span class="cross">✕</span></td>
+            <td><span class="cross">✕</span></td>
+            <td><span class="cross">✕</span></td>
+            <td><span class="cross">✕</span></td>
+          </tr>
+          <tr>
+            <td>Built for non-crypto users</td>
+            <td><span class="check">✦</span></td>
+            <td><span class="cross">✕</span></td>
+            <td><span class="cross">✕</span></td>
+            <td><span class="cross">✕</span></td>
+            <td><span class="cross">✕</span></td>
+          </tr>
+          <tr>
+            <td>Scam and wrong address recovery</td>
+            <td><span class="check">✦</span></td>
+            <td><span class="cross">✕</span></td>
+            <td><span class="cross">✕</span></td>
+            <td><span class="cross">✕</span></td>
+            <td><span class="cross">✕</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- PRINCIPLES -->
+<section style="background: var(--surface); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);">
+  <div class="wrap">
+    <div class="reveal">
+      <div class="section-label">04 · Core Principles</div>
+      <h2>The foundation<br>everything rests on.</h2>
+    </div>
+    <div class="principles-grid reveal">
+      <div class="principle">
+        <div class="principle-mark">Truth & Proof</div>
+        <div class="principle-title">If It Can't Be Proven, It Didn't Happen</div>
+        <div class="principle-desc">Every claim, every condition, every state transition requires verifiable proof. On-chain, ZK, oracle consensus, or institutional attestation. Nothing is assumed. Making lies expensive is more robust than making them impossible.</div>
+      </div>
+      <div class="principle">
+        <div class="principle-mark">Outcomes Not Instructions</div>
+        <div class="principle-title">You Say What. We Figure Out How.</div>
+        <div class="principle-desc">Users express goals. The network finds the path. Complexity lives at the infrastructure layer — not the user layer. The next billion people will not learn crypto. They will just tell it what they want.</div>
+      </div>
+      <div class="principle">
+        <div class="principle-mark">Atomic Or Nothing</div>
+        <div class="principle-title">Complete Or Reverse. No In Between.</div>
+        <div class="principle-desc">Every execution either completes perfectly or reverses completely. There is no state where a user loses money to a mistake, a failed step, or an incomplete transaction. The network cannot be left half-finished.</div>
+      </div>
+      <div class="principle">
+        <div class="principle-mark">Value With Agency</div>
+        <div class="principle-title">Money That Knows What It's For.</div>
+        <div class="principle-desc">Assets are not inert. They know their purpose, enforce their own conditions, reverse themselves when needed, and dissolve across chains without a bridge. Programmable matter for value.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- BUILD STATUS -->
+<section>
+  <div class="wrap">
+    <div class="reveal">
+      <div class="section-label">05 · Build Status</div>
+      <h2>Where we are<br><em>right now.</em></h2>
+    </div>
+    <div class="status-grid reveal">
+      <div class="status-row">
+        <span class="status-name">Intent specification language & core data model</span>
+        <span class="status-badge done">✦ Designed</span>
+      </div>
+      <div class="status-row">
+        <span class="status-name">Constraint taxonomy & objective function model</span>
+        <span class="status-badge done">✦ Designed</span>
+      </div>
+      <div class="status-row">
+        <span class="status-name">Solver network architecture</span>
+        <span class="status-badge done">✦ Designed</span>
+      </div>
+      <div class="status-row">
+        <span class="status-name">Programmable asset state machine</span>
+        <span class="status-badge done">✦ Designed</span>
+      </div>
+      <div class="status-row">
+        <span class="status-name">Truth & proof system</span>
+        <span class="status-badge done">✦ Designed</span>
+      </div>
+      <div class="status-row">
+        <span class="status-name">Governance model</span>
+        <span class="status-badge done">✦ Designed</span>
+      </div>
+      <div class="status-row">
+        <span class="status-name">Smart contract development</span>
+        <span class="status-badge progress">⟡ In Progress</span>
+      </div>
+      <div class="status-row">
+        <span class="status-name">Testnet deployment</span>
+        <span class="status-badge soon">Coming Soon</span>
+      </div>
+      <div class="status-row">
+        <span class="status-name">Solver SDK & open solver network</span>
+        <span class="status-badge soon">Coming Soon</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+  <div class="wrap">
+    <div class="reveal">
+      <div class="cta-title">
+        Built from<br>
+        <em>Zambia.</em><br>
+        For the world.
+      </div>
+      <p class="cta-sub">From the continent that needs this more than anywhere on earth. The next billion people deserve crypto that works for them.</p>
+      <div class="cta-links">
+        <a href="https://github.com/Linaz" class="btn-primary" target="_blank">View on GitHub</a>
+        <a href="mailto:hello@linaz.xyz" class="btn-ghost">Get In Touch →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">
+    <div class="logo-dot"></div>
+    LINAZ
+  </div>
+  <div class="footer-right">
+    PRE-TESTNET · 2025<br>
+    INTENT & OUTCOME EXECUTION NETWORK<br>
+    BUILT FROM LUSAKA, ZAMBIA
+  </div>
+</footer>
+
+<script>
+  // ── CURSOR ──
+  const cursor = document.getElementById('cursor');
+  const ring = document.getElementById('cursorRing');
+  let mx = 0, my = 0, rx = 0, ry = 0;
+
+  document.addEventListener('mousemove', e => {
+    mx = e.clientX; my = e.clientY;
+    cursor.style.left = mx - 4 + 'px';
+    cursor.style.top = my - 4 + 'px';
+  });
+
+  function animRing() {
+    rx += (mx - rx) * 0.12;
+    ry += (my - ry) *.12;
+    ring.style.left = rx - 16 + 'px';
+    ring.style.top = ry - 16 + 'px';
+    requestAnimationFrame(animRing);
+  }
+  animRing();
+
+  document.querySelectorAll('a, button').forEach(el => {
+    el.addEventListener('mouseenter', () => {
+      cursor.style.transform = 'scale(2.5)';
+      ring.style.transform = 'scale(1.5)';
+      ring.style.borderColor = 'rgba(212,245,60,0.8)';
+    });
+    el.addEventListener('mouseleave', () => {
+      cursor.style.transform = 'scale(1)';
+      ring.style.transform = 'scale(1)';
+      ring.style.borderColor = 'rgba(212,245,60,0.4)';
+    });
+  });
+
+  // ── NAV SCROLL ──
+  const nav = document.getElementById('nav');
+  window.addEventListener('scroll', () => {
+    nav.classList.toggle('scrolled', window.scrollY > 60);
+  });
+
+  // ── SCROLL REVEAL ──
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach((e, i) => {
+      if (e.isIntersecting) {
+        setTimeout(() => e.target.classList.add('visible'), i * 80);
+        observer.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.1 });
+  reveals.forEach(el => observer.observe(el));
+
+  // ── DEMO ANIMATION ──
+  const steps = [1,2,3,4,5].map(i => document.getElementById('step'+i));
+  const result = document.getElementById('demoResult');
+  let demoRunning = false;
+
+  function runDemo() {
+    if (demoRunning) return;
+    demoRunning = true;
+    steps.forEach(s => s.classList.remove('active'));
+    result.style.display = 'none';
+    steps[0].classList.add('active');
+
+    steps.forEach((step, i) => {
+      setTimeout(() => {
+        steps.forEach(s => s.classList.remove('active'));
+        step.classList.add('active');
+        if (i === steps.length - 1) {
+          setTimeout(() => {
+            result.style.display = 'flex';
+            demoRunning = false;
+          }, 800);
+        }
+      }, i * 900);
+    });
+  }
+
+  // Auto-run demo when in view
+  const demoSection = document.querySelector('.demo-section');
+  const demoObserver = new IntersectionObserver(entries => {
+    if (entries[0].isIntersecting) {
+      setTimeout(runDemo, 600);
+      demoObserver.unobserve(demoSection);
+    }
+  }, { threshold: 0.5 });
+  demoObserver.observe(demoSection);
+
+  // Click to re-run
+  demoSection.addEventListener('click', runDemo);
+</script>
+</body>
+</html>
