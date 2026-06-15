@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Intent Wallet</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono&family=DM+Sans:wght@300;400;500;600&family=Syne:wght@700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-color: #F5F0E8;
+            --card-bg: #FFFFFF;
+            --primary: #C97B4B;
+            --primary-light: #E8D5C4;
+            --text-main: #2C2A27;
+            --text-secondary: #8A8680;
+            --text-muted: #B8B4AC;
+            --success: #6B9E8A;
+            --warning: #D4956A;
+            --border-color: #E8E4DC;
+            --shadow: rgba(44, 42, 39, 0.08);
+            
+            --font-headline: 'Syne', sans-serif;
+            --font-body: 'DM Sans', sans-serif;
+            --font-mono: 'DM Mono', monospace;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-body);
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.5;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Simplified Header - Logo Only */
+        .brand-header {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 32px 24px;
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+        }
+
+        .delta-logo {
+            font-family: var(--font-headline);
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        /* Main Structural Layout */
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px 100px;
+        }
+
+        /* Hero Section Grid */
+        .hero-section {
+            display: grid;
+            grid-template-columns: 1.1fr 0.9fr;
+            gap: 60px;
+            align-items: center;
+            padding: 40px 0 80px;
+        }
+
+        .hero-content {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .badge {
+            align-self: flex-start;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            padding: 6px 16px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-secondary);
+            box-shadow: 0 2px 4px var(--shadow);
+        }
+
+        .hero-content h1 {
+            font-family: var(--font-headline);
+            font-size: 3.8rem;
+            font-weight: 700;
+            line-height: 1.15;
+            letter-spacing: -0.01em;
+        }
+
+        .gradient-text {
+            color: var(--primary);
+        }
+
+        .hero-description {
+            font-size: 1.15rem;
+            color: var(--text-secondary);
+            max-width: 540px;
+        }
+
+        /* Hero Action Buttons */
+        .cta-group {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .btn-dark {
+            background: var(--primary);
+            color: #ffffff;
+            padding: 14px 28px;
+            border-radius: 10px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: background 0.2s ease, transform 0.2s ease;
+            box-shadow: 0 4px 12px var(--shadow);
+        }
+
+        .btn-dark:hover {
+            background: #b56c3f;
+            transform: translateY(-2px);
+        }
+
+        .btn-light {
+            background: var(--card-bg);
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+            padding: 14px 28px;
+            border-radius: 10px;
+            font-weight: 600;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 2px 6px var(--shadow);
+            transition: background 0.2s ease;
+        }
+
+        .btn-light:hover {
+            background: var(--primary-light);
+        }
+
+        .waitlist-stats {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+            margin-top: 8px;
+        }
+
+        /* Fixed Mobile Screen Simulator */
+        .hero-mockup {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .phone-frame {
+            background: var(--card-bg);
+            border: 12px solid var(--text-main);
+            border-radius: 44px;
+            width: 100%;
+            max-width: 350px;
+            padding: 32px 20px;
+            box-shadow: 0 40px 80px -15px var(--shadow);
+        }
+
+        .phone-top {
+            display: flex;
+            justify-content: space-between;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            margin-bottom: 32px;
+            font-weight: 600;
+            font-family: var(--font-mono);
+        }
+
+        .phone-island {
+            width: 110px;
+            height: 25px;
+            background: var(--text-main);
+            border-radius: 20px;
+            margin: -40px auto 20px;
+        }
+
+        .status-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .status-node {
+            background: var(--card-bg);
+            border: 1.5px solid var(--border-color);
+            border-radius: 12px;
+            padding: 16px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 4px 6px -1px var(--shadow);
+        }
+
+        .status-node.err { border-color: #E8D5C4; color: var(--primary); }
+        .status-node.warn { border-color: var(--border-color); color: var(--warning); }
+        .status-node.process { border-color: var(--border-color); color: var(--text-secondary); }
+        .status-node.safe { border-color: var(--border-color); color: var(--success); }
+
+        /* 4-Column Feature Row */
+        .features-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 24px;
+            margin: 60px 0;
+        }
+
+        .feature-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            padding: 24px;
+            border-radius: 16px;
+            box-shadow: 0 6px 18px var(--shadow);
+        }
+
+        .feature-card h3 {
+            font-family: var(--font-headline);
+            font-size: 1.2rem;
+            margin-bottom: 8px;
+            font-weight: 700;
+        }
+
+        .feature-card p {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+        }
+
+        /* Fixed Chain Abstraction Layout */
+        .abstraction-section {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 50px;
+            display: grid;
+            grid-template-columns: 1.1fr 0.9fr;
+            gap: 50px;
+            align-items: center;
+            margin-top: 40px;
+            box-shadow: 0 8px 24px var(--shadow);
+        }
+
+        .abstraction-left h2 {
+            font-family: var(--font-headline);
+            font-size: 2.4rem;
+            margin-bottom: 16px;
+            letter-spacing: -0.01em;
+        }
+
+        .abstraction-left p {
+            color: var(--text-secondary);
+            margin-bottom: 28px;
+            font-size: 1.05rem;
+        }
+
+        .check-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 14px;
+            font-weight: 500;
+            font-size: 0.95rem;
+        }
+
+        .check-icon {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--primary-light);
+            border: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            color: var(--primary);
+            font-weight: bold;
+        }
+
+        /* Responsive Graphic Container */
+        .balance-graphic-box {
+            background: var(--text-main);
+            border-radius: 16px;
+            padding: 40px 24px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            min-height: 200px;
+            box-shadow: 0 20px 40px var(--shadow);
+        }
+
+        .balance-flex-wrap {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            width: 100%;
+            text-align: center;
+        }
+
+        .balance-text {
+            font-family: var(--font-mono);
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--bg-color);
+            white-space: nowrap;
+        }
+
+        .crypto-badge {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            padding: 4px 12px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            color: var(--border-color);
+            font-weight: 600;
+        }
+
+        /* Tally Waitlist Container */
+        .tally-embed-container {
+            max-width: 500px;
+            margin: 60px auto 0;
+            overflow: hidden;
+            border-radius: 16px;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            box-shadow: 0 8px 24px var(--shadow);
+        }
+
+        /* Comprehensive Responsive Breakpoints */
+        @media (max-width: 968px) {
+            .hero-section {
+                grid-template-columns: 1fr;
+                text-align: center;
+                gap: 50px;
+            }
+
+            .hero-content h1 {
+                font-size: 2.8rem;
+            }
+
+            .hero-description {
+                margin: 0 auto;
+            }
+
+            .cta-group {
+                justify-content: center;
+            }
+
+            .badge {
+                align-self: center;
+            }
+
+            .abstraction-section {
+                grid-template-columns: 1fr;
+                padding: 32px 24px;
+                gap: 40px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero-content h1 {
+                font-size: 2.3rem;
+            }
+
+            .btn-dark, .btn-light {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .balance-text {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="brand-header">
+        <div class="delta-logo">Δ</div>
+    </header>
+
+    <main class="container">
+        
+        <section class="hero-section">
+            <div class="hero-content">
+                <span class="badge">Intent Executing Wallet</span>
+                <h1>You decide the outcome. <br><span class="gradient-text">We handle everything.</span></h1>
+                <p class="hero-description">
+                    Tell your wallet what you want to do — send, swap, save, or cash out. 
+                    Intent finds the best way across chains and executes it safely.
+                </p>
+                <div class="cta-group">
+                    <a href="#waitlist-anchor" class="btn-dark">Get Early Access →</a>
+                    <a href="#" class="btn-light">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+                        Watch Demo
+                    </a>
+                </div>
+                <div class="waitlist-stats">
+                    Join 17,432+ people on the waitlist
+                </div>
+            </div>
+
+            <div class="hero-mockup">
+                <div class="phone-frame">
+                    <div class="phone-island"></div>
+                    <div class="phone-top">
+                        <span>9:41</span>
+                        <span>5G</span>
+                    </div>
+                    <div class="status-list">
+                        <div class="status-node err">
+                            <span>🛑 Gas Estimation Failed</span>
+                        </div>
+                        <div class="status-node warn">
+                            <span>🔍 Select RPC Bridge Route</span>
+                        </div>
+                        <div class="status-node process">
+                            <span>🔄 Switching Chain Network...</span>
+                        </div>
+                        <div class="status-node safe">
+                            <span>🛡️ Confirm Safe Execution</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="features-row">
+            <div class="feature-card">
+                <h3>Non-custodial</h3>
+                <p>You own your assets.</p>
+            </div>
+            <div class="feature-card">
+                <h3>Passkey secured</h3>
+                <p>No seed phrase required.</p>
+            </div>
+            <div class="feature-card">
+                <h3>Cross-chain</h3>
+                <p>One balance, all chains.</p>
+            </div>
+            <div class="feature-card">
+                <h3>Smart protection</h3>
+                <p>We look out for you.</p>
+            </div>
+        </section>
+
+        <section class="abstraction-section">
+            <div class="abstraction-left">
+                <h2>Chain Abstraction</h2>
+                <p>No more chain switching. Your funds appear as one unified balance across all supported networks.</p>
+                
+                <div class="check-item">
+                    <div class="check-icon">✓</div>
+                    <span>Merged balance view</span>
+                </div>
+                <div class="check-item">
+                    <div class="check-icon">✓</div>
+                    <span>Multi-chain liquidity access</span>
+                </div>
+                <div class="check-item">
+                    <div class="check-icon">✓</div>
+                    <span>Chains invisible to user</span>
+                </div>
+            </div>
+
+            <div class="abstraction-right">
+                <div class="balance-graphic-box">
+                    <div class="balance-flex-wrap">
+                        <span class="crypto-badge">Eth</span>
+                        <div class="balance-text">Balance: $4,280</div>
+                        <span class="crypto-badge">Arbitrum</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div id="waitlist-anchor" class="tally-embed-container">
+            <iframe src="https://tally.so/embed/RGb2dJ?alignLeft=1&hideTitle=1&transparentBackground=1&dynamicHeight=1" loading="lazy" width="100%" height="160" frameborder="0" marginheight="0" marginwidth="0" title="Join the Waitlist"></iframe>
+        </div>
+
+    </main>
+
+</body>
+  </html>
+  
