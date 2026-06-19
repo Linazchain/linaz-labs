@@ -1,515 +1,637 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Intent Wallet</title>
+    <title>Linaz Protocol | Value with Agency</title>
+    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Mono&family=DM+Sans:wght@300;400;500;600&family=Syne:wght@700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
     
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        cream: '#F6F3EB',
+                        surface: '#FFFFFF',
+                        terra: '#C17753',
+                        textPri: '#1A1A1A',
+                        textSec: '#6E6A64',
+                        textMuted: '#9E9A92',
+                        borderMuted: '#E5E1D8',
+                        success: '#52A27E'
+                    },
+                    fontFamily: {
+                        display: ['Space Grotesk', 'sans-serif'],
+                        mono: ['Space Mono', 'monospace'],
+                        sans: ['Inter', 'sans-serif']
+                    },
+                    boxShadow: {
+                        card: '0 4px 20px -2px rgba(140, 134, 126, 0.08)',
+                        warm: '0 10px 30px -5px rgba(193, 119, 83, 0.15)'
+                    },
+                    borderRadius: {
+                        card: '24px',
+                        btn: '12px'
+                    }
+                }
+            }
+        }
+    </script>
+
     <style>
-        :root {
-            --bg-color: #F5F0E8;
-            --card-bg: #FFFFFF;
-            --primary: #C97B4B;
-            --primary-light: #E8D5C4;
-            --text-main: #2C2A27;
-            --text-secondary: #8A8680;
-            --text-muted: #B8B4AC;
-            --success: #6B9E8A;
-            --warning: #D4956A;
-            --border-color: #E8E4DC;
-            --shadow: rgba(44, 42, 39, 0.08);
-            
-            --font-headline: 'Syne', sans-serif;
-            --font-body: 'DM Sans', sans-serif;
-            --font-mono: 'DM Mono', monospace;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        body {
-            font-family: var(--font-body);
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            line-height: 1.5;
-            overflow-x: hidden;
-            -webkit-font-smoothing: antialiased;
-        }
-
-        /* Simplified Header - Logo Only */
-        .brand-header {
-            width: 100%;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 32px 24px;
-            display: flex;
-            justify-content: flex-start;
-            align-items: center;
-        }
-
-        .delta-logo {
-            font-family: var(--font-headline);
-            font-size: 2.2rem;
-            font-weight: 700;
-            color: var(--primary);
-        }
-
-        /* Main Structural Layout */
-        .container {
-            width: 100%;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 24px 100px;
-        }
-
-        /* Hero Section Grid */
-        .hero-section {
-            display: grid;
-            grid-template-columns: 1.1fr 0.9fr;
-            gap: 60px;
-            align-items: center;
-            padding: 40px 0 80px;
-        }
-
-        .hero-content {
-            display: flex;
-            flex-direction: column;
-            gap: 24px;
-        }
-
-        .badge {
-            align-self: flex-start;
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            padding: 6px 16px;
-            border-radius: 6px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            color: var(--text-secondary);
-            box-shadow: 0 2px 4px var(--shadow);
-        }
-
-        .hero-content h1 {
-            font-family: var(--font-headline);
-            font-size: 3.8rem;
-            font-weight: 700;
-            line-height: 1.15;
-            letter-spacing: -0.01em;
-        }
-
-        .gradient-text {
-            color: var(--primary);
-        }
-
-        .hero-description {
-            font-size: 1.15rem;
-            color: var(--text-secondary);
-            max-width: 540px;
-        }
-
-        /* Hero Action Buttons */
-        .cta-group {
-            display: flex;
-            gap: 16px;
-            align-items: center;
-            flex-wrap: wrap;
-        }
-
-        .btn-dark {
-            background: var(--primary);
-            color: #ffffff;
-            padding: 14px 28px;
-            border-radius: 10px;
-            font-weight: 600;
-            text-decoration: none;
-            transition: background 0.2s ease, transform 0.2s ease;
-            box-shadow: 0 4px 12px var(--shadow);
-        }
-
-        .btn-dark:hover {
-            background: #b56c3f;
-            transform: translateY(-2px);
-        }
-
-        .btn-light {
-            background: var(--card-bg);
-            color: var(--text-main);
-            border: 1px solid var(--border-color);
-            padding: 14px 28px;
-            border-radius: 10px;
-            font-weight: 600;
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            box-shadow: 0 2px 6px var(--shadow);
-            transition: background 0.2s ease;
-        }
-
-        .btn-light:hover {
-            background: var(--primary-light);
-        }
-
-        .waitlist-stats {
-            font-size: 0.9rem;
-            color: var(--text-secondary);
-            font-weight: 500;
-            margin-top: 8px;
-        }
-
-        /* Fixed Mobile Screen Simulator */
-        .hero-mockup {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .phone-frame {
-            background: var(--card-bg);
-            border: 12px solid var(--text-main);
-            border-radius: 44px;
-            width: 100%;
-            max-width: 350px;
-            padding: 32px 20px;
-            box-shadow: 0 40px 80px -15px var(--shadow);
-        }
-
-        .phone-top {
-            display: flex;
-            justify-content: space-between;
-            color: var(--text-secondary);
-            font-size: 0.85rem;
-            margin-bottom: 32px;
-            font-weight: 600;
-            font-family: var(--font-mono);
-        }
-
-        .phone-island {
-            width: 110px;
-            height: 25px;
-            background: var(--text-main);
-            border-radius: 20px;
-            margin: -40px auto 20px;
-        }
-
-        .status-list {
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-        }
-
-        .status-node {
-            background: var(--card-bg);
-            border: 1.5px solid var(--border-color);
-            border-radius: 12px;
-            padding: 16px;
-            font-size: 0.95rem;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            box-shadow: 0 4px 6px -1px var(--shadow);
-        }
-
-        .status-node.err { border-color: #E8D5C4; color: var(--primary); }
-        .status-node.warn { border-color: var(--border-color); color: var(--warning); }
-        .status-node.process { border-color: var(--border-color); color: var(--text-secondary); }
-        .status-node.safe { border-color: var(--border-color); color: var(--success); }
-
-        /* 4-Column Feature Row */
-        .features-row {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-            gap: 24px;
-            margin: 60px 0;
-        }
-
-        .feature-card {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            padding: 24px;
-            border-radius: 16px;
-            box-shadow: 0 6px 18px var(--shadow);
-        }
-
-        .feature-card h3 {
-            font-family: var(--font-headline);
-            font-size: 1.2rem;
-            margin-bottom: 8px;
-            font-weight: 700;
-        }
-
-        .feature-card p {
-            font-size: 0.95rem;
-            color: var(--text-secondary);
-        }
-
-        /* Fixed Chain Abstraction Layout */
-        .abstraction-section {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            padding: 50px;
-            display: grid;
-            grid-template-columns: 1.1fr 0.9fr;
-            gap: 50px;
-            align-items: center;
-            margin-top: 40px;
-            box-shadow: 0 8px 24px var(--shadow);
-        }
-
-        .abstraction-left h2 {
-            font-family: var(--font-headline);
-            font-size: 2.4rem;
-            margin-bottom: 16px;
-            letter-spacing: -0.01em;
-        }
-
-        .abstraction-left p {
-            color: var(--text-secondary);
-            margin-bottom: 28px;
-            font-size: 1.05rem;
-        }
-
-        .check-item {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 14px;
-            font-weight: 500;
-            font-size: 0.95rem;
-        }
-
-        .check-icon {
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            background: var(--primary-light);
-            border: 1px solid var(--border-color);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.75rem;
-            color: var(--primary);
-            font-weight: bold;
-        }
-
-        /* Responsive Graphic Container */
-        .balance-graphic-box {
-            background: var(--text-main);
-            border-radius: 16px;
-            padding: 40px 24px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            width: 100%;
-            min-height: 200px;
-            box-shadow: 0 20px 40px var(--shadow);
-        }
-
-        .balance-flex-wrap {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
-            flex-wrap: wrap;
-            width: 100%;
-            text-align: center;
-        }
-
-        .balance-text {
-            font-family: var(--font-mono);
-            font-size: 1.8rem;
-            font-weight: 700;
-            color: var(--bg-color);
-            white-space: nowrap;
-        }
-
-        .crypto-badge {
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            padding: 4px 12px;
-            border-radius: 6px;
-            font-size: 0.75rem;
-            color: var(--border-color);
-            font-weight: 600;
-        }
-
-        /* Tally Waitlist Container */
-        .tally-embed-container {
-            max-width: 500px;
-            margin: 60px auto 0;
-            overflow: hidden;
-            border-radius: 16px;
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            box-shadow: 0 8px 24px var(--shadow);
-        }
-
-        /* Comprehensive Responsive Breakpoints */
-        @media (max-width: 968px) {
-            .hero-section {
-                grid-template-columns: 1fr;
-                text-align: center;
-                gap: 50px;
-            }
-
-            .hero-content h1 {
-                font-size: 2.8rem;
-            }
-
-            .hero-description {
-                margin: 0 auto;
-            }
-
-            .cta-group {
-                justify-content: center;
-            }
-
-            .badge {
-                align-self: center;
-            }
-
-            .abstraction-section {
-                grid-template-columns: 1fr;
-                padding: 32px 24px;
-                gap: 40px;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .hero-content h1 {
-                font-size: 2.3rem;
-            }
-
-            .btn-dark, .btn-light {
-                width: 100%;
-                justify-content: center;
-            }
-
-            .balance-text {
-                font-size: 1.5rem;
-            }
-        }
+        body { font-feature-settings: "cv02", "cv03", "cv04", "cv11"; }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #F6F3EB; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #E5E1D8; border-radius: 3px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #C17753; }
     </style>
 </head>
-<body>
+<body class="bg-cream text-textPri font-sans selection:bg-terra selection:text-white antialiased overflow-x-hidden">
 
-    <header class="brand-header">
-        <div class="delta-logo">Δ</div>
-    </header>
+    <nav class="max-w-7xl mx-auto px-6 py-6 flex justify-between items-center border-b border-borderMuted/40">
+        <div class="flex items-center gap-3">
+            <svg class="w-8 h-8 text-terra animate-spin-slow" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" style="animation-duration: 20s;">
+                <circle cx="50" cy="50" r="35" stroke="currentColor" stroke-width="6" stroke-dasharray="160 60" stroke-linecap="round"/>
+                <circle cx="15" cy="50" r="8" fill="currentColor"/>
+            </svg>
+            <span class="font-display font-bold text-xl tracking-widest text-textPri">LINAZ</span>
+        </div>
+        <div class="flex items-center gap-4">
+            <div class="hidden sm:flex items-center gap-2 bg-surface px-4 py-2 rounded-full border border-borderMuted shadow-sm">
+                <span class="w-2 h-2 rounded-full bg-terra animate-pulse"></span>
+                <span class="font-mono text-[11px] text-textSec font-bold uppercase tracking-widest">Pre-Testnet Phase</span>
+            </div>
+            <a href="#connect" class="px-5 py-2.5 bg-textPri text-cream font-mono text-xs font-bold rounded-btn hover:bg-terra transition-all shadow-md">
+                GET INVOLVED
+            </a>
+        </div>
+    </nav>
 
-    <main class="container">
-        
-        <section class="hero-section">
-            <div class="hero-content">
-                <span class="badge">Intent Executing Wallet</span>
-                <h1>You decide the outcome. <br><span class="gradient-text">We handle everything.</span></h1>
-                <p class="hero-description">
-                    Tell your wallet what you want to do — send, swap, save, or cash out. 
-                    Intent finds the best way across chains and executes it safely.
-                </p>
-                <div class="cta-group">
-                    <a href="#waitlist-anchor" class="btn-dark">Get Early Access →</a>
-                    <a href="#" class="btn-light">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
-                        Watch Demo
-                    </a>
-                </div>
-                <div class="waitlist-stats">
-                    Join 17,432+ people on the waitlist
-                </div>
-            </div>
-
-            <div class="hero-mockup">
-                <div class="phone-frame">
-                    <div class="phone-island"></div>
-                    <div class="phone-top">
-                        <span>9:41</span>
-                        <span>5G</span>
-                    </div>
-                    <div class="status-list">
-                        <div class="status-node err">
-                            <span>🛑 Gas Estimation Failed</span>
-                        </div>
-                        <div class="status-node warn">
-                            <span>🔍 Select RPC Bridge Route</span>
-                        </div>
-                        <div class="status-node process">
-                            <span>🔄 Switching Chain Network...</span>
-                        </div>
-                        <div class="status-node safe">
-                            <span>🛡️ Confirm Safe Execution</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section class="features-row">
-            <div class="feature-card">
-                <h3>Non-custodial</h3>
-                <p>You own your assets.</p>
-            </div>
-            <div class="feature-card">
-                <h3>Passkey secured</h3>
-                <p>No seed phrase required.</p>
-            </div>
-            <div class="feature-card">
-                <h3>Cross-chain</h3>
-                <p>One balance, all chains.</p>
-            </div>
-            <div class="feature-card">
-                <h3>Smart protection</h3>
-                <p>We look out for you.</p>
-            </div>
-        </section>
-
-        <section class="abstraction-section">
-            <div class="abstraction-left">
-                <h2>Chain Abstraction</h2>
-                <p>No more chain switching. Your funds appear as one unified balance across all supported networks.</p>
-                
-                <div class="check-item">
-                    <div class="check-icon">✓</div>
-                    <span>Merged balance view</span>
-                </div>
-                <div class="check-item">
-                    <div class="check-icon">✓</div>
-                    <span>Multi-chain liquidity access</span>
-                </div>
-                <div class="check-item">
-                    <div class="check-icon">✓</div>
-                    <span>Chains invisible to user</span>
-                </div>
+    <header class="max-w-7xl mx-auto px-6 pt-12 pb-24 grid grid-cols-1 lg:grid-cols-12 gap-16 items-center">
+        <div class="lg:col-span-7 space-y-8">
+            <span class="font-mono text-xs text-terra font-bold uppercase tracking-widest bg-terra/10 px-3 py-1.5 rounded-full">
+                The Declarative Architecture Shift [cite: 349]
+            </span>
+            <h1 class="text-4xl sm:text-6xl font-display font-bold text-textPri tracking-tight leading-[1.08]">
+                Value that knows what it's <br>
+                <span class="text-terra">supposed to do.</span> [cite: 533]
+            </h1>
+            <p class="text-lg sm:text-xl text-textSec font-normal max-w-2xl leading-relaxed">
+                The first network where you tell it what you want to happen with your money — and it makes it happen completely and safely, or not at all.
+            </p>
+            
+            <div class="flex flex-wrap gap-4 pt-2">
+                <a href="#how-it-works" class="px-6 py-4 bg-terra text-white font-mono text-xs font-bold rounded-btn shadow-warm hover:opacity-95 transition-opacity">
+                    EXPLORE ARCHITECTURE
+                </a>
+                <a href="#problem" class="px-6 py-4 bg-surface text-textSec font-mono text-xs font-bold rounded-btn border border-borderMuted shadow-sm hover:bg-white hover:text-textPri transition-colors">
+                    READ THE PROTOCOL MISSION
+                </a>
             </div>
 
-            <div class="abstraction-right">
-                <div class="balance-graphic-box">
-                    <div class="balance-flex-wrap">
-                        <span class="crypto-badge">Eth</span>
-                        <div class="balance-text">Balance: $4,280</div>
-                        <span class="crypto-badge">Arbitrum</span>
-                    </div>
+            <div class="pt-8 grid grid-cols-2 gap-6 max-w-md border-t border-borderMuted/60 font-mono">
+                <div>
+                    <div class="text-2xl font-bold text-textMuted">15%</div>
+                    <div class="text-[11px] text-textSec mt-1 uppercase tracking-wider">Traditional DeFi Intent Expression [cite: 359]</div>
+                </div>
+                <div>
+                    <div class="text-2xl font-bold text-terra">65%</div>
+                    <div class="text-[11px] text-textSec mt-1 uppercase tracking-wider">Linaz Protocol Native Coverage [cite: 360]</div>
                 </div>
             </div>
-        </section>
-
-        <div id="waitlist-anchor" class="tally-embed-container">
-            <iframe src="https://tally.so/embed/RGb2dJ?alignLeft=1&hideTitle=1&transparentBackground=1&dynamicHeight=1" loading="lazy" width="100%" height="160" frameborder="0" marginheight="0" marginwidth="0" title="Join the Waitlist"></iframe>
         </div>
 
-    </main>
+        <div class="lg:col-span-5 w-full flex justify-center" x-data="{ 
+            activeScreen: 'input',
+            intentText: '',
+            fullIntent: 'Send 10 SUI to Mum. Return it if she doesn\'t confirm in 10 minutes.',
+            timer: 585,
+            progress: 0,
+            interval: null,
+            timerInterval: null,
+            startSimulation() {
+                this.activeScreen = 'compile';
+                this.progress = 0;
+                this.interval = setInterval(() => {
+                    if(this.progress < 100) {
+                        this.progress += 4;
+                    } else {
+                        clearInterval(this.interval);
+                        this.activeScreen = 'execute';
+                        this.startCountdown();
+                    }
+                }, 80);
+            },
+            startCountdown() {
+                this.timer = 585;
+                if(this.timerInterval) clearInterval(this.timerInterval);
+                this.timerInterval = setInterval(() => {
+                    if(this.timer > 0) this.timer--;
+                }, 1000);
+            },
+            formatTime(secs) {
+                let m = Math.floor(secs / 60).toString().padStart(2, '0');
+                let s = (secs % 60).toString().padStart(2, '0');
+                return `${m}:${s}`;
+            },
+            resetSim() {
+                clearInterval(this.interval);
+                clearInterval(this.timerInterval);
+                this.activeScreen = 'input';
+                this.intentText = '';
+            }
+        }">
+            <div class="w-full max-w-md bg-cream border border-borderMuted rounded-card p-6 shadow-card relative overflow-hidden min-h-[520px] flex flex-col justify-between">
+                
+                <div class="bg-surface rounded-card shadow-card px-5 py-4 flex items-center justify-between w-full border border-borderMuted/30">
+                    <div>
+                        <p class="text-textMuted text-[10px] uppercase tracking-widest font-mono mb-1">Wallet Balance</p>
+                        <p class="font-mono text-2xl font-medium text-textPri">25.40 <span class="text-textMuted text-sm">SUI</span></p>
+                    </div>
+                    <span class="w-2 h-2 rounded-full bg-success"></span>
+                </div>
+
+                <div class="my-auto py-6">
+                    <template x-if="activeScreen === 'input'">
+                        <div class="space-y-5 animate-fadeIn">
+                            <div class="space-y-1">
+                                <h3 class="font-display font-bold text-2xl">Linaz</h3>
+                                <p class="text-xs text-textSec">Tell us what you want to happen.</p>
+                            </div>
+                            <div class="relative">
+                                <textarea 
+                                    class="w-full bg-surface border border-borderMuted rounded-xl p-4 font-mono text-sm text-textPri focus:outline-none focus:border-terra placeholder-textMuted/60 resize-none h-32 shadow-inner" 
+                                    placeholder="Type your strategic intent primitive..."
+                                    x-model="intentText"
+                                    @focus="intentText = fullIntent"
+                                ></textarea>
+                                <div class="absolute bottom-3 right-3 text-[10px] font-mono text-textMuted tracking-wider uppercase">Click to Autofill Demo</div>
+                            </div>
+                            <button 
+                                class="w-full py-4 bg-terra text-white font-mono text-xs font-bold uppercase tracking-wider rounded-btn shadow-warm disabled:opacity-40 disabled:cursor-not-allowed hover:opacity-95 transition-opacity"
+                                :disabled="!intentText"
+                                @click="startSimulation()"
+                            >
+                                Execute Intent
+                            </button>
+                            <p class="text-center text-[10px] font-mono text-textMuted max-w-xs mx-auto leading-relaxed">
+                                Your intent is compiled on-chain. Funds return automatically if conditions are not met.
+                            </p>
+                        </div>
+                    </template>
+
+                    <template x-if="activeScreen === 'compile'">
+                        <div class="space-y-6 text-center py-4 animate-fadeIn">
+                            <div class="space-y-2">
+                                <p class="font-mono text-[10px] uppercase tracking-widest text-terra font-bold">Solver Activated</p>
+                                <h3 class="font-display font-bold text-2xl">Finding optimal path...</h3>
+                            </div>
+                            
+                            <div class="bg-surface rounded-xl border border-borderMuted p-5 shadow-sm text-left font-mono text-xs space-y-4">
+                                <div class="flex justify-between text-[10px] text-textMuted uppercase tracking-wider">
+                                    <span>Origin</span>
+                                    <span>Destination</span>
+                                </div>
+                                <div class="relative w-full h-1 bg-cream rounded-full overflow-hidden">
+                                    <div class="absolute top-0 left-0 h-full bg-terra transition-all duration-100" :style="`width: ${progress}%`"></div>
+                                </div>
+                                <div class="text-right text-[10px] text-textMuted" x-text="`${progress}%`"></div>
+                            </div>
+                        </div>
+                    </template>
+
+                    <template x-if="activeScreen === 'execute'">
+                        <div class="space-y-4 animate-fadeIn text-left">
+                            <p class="font-mono text-[10px] uppercase tracking-widest text-success font-bold text-center">Outcome Secured Atomically</p>
+                            
+                            <div class="bg-surface rounded-xl border border-borderMuted p-4 shadow-sm space-y-1.5">
+                                <span class="font-mono text-[9px] uppercase tracking-wider text-textMuted block">TRANSACTION DIGEST</span>
+                                <p class="font-mono text-[11px] text-textPri break-all leading-tight selection:bg-terra/20">FEDP4vk59FCasbF44KW9hMRfydjc1DpFEx5E8aX6mSuN</p>
+                                <a href="#blockchain-proof" @click.prevent="activeScreen = 'explorer'" class="text-[10px] font-mono text-terra font-bold hover:underline inline-block pt-1">View on Sui Explorer &rarr;</a>
+                            </div>
+
+                            <div class="bg-surface rounded-xl border border-borderMuted p-4 shadow-sm flex items-center gap-5">
+                                <div class="relative flex items-center justify-center w-16 h-16 flex-shrink-0">
+                                    <svg class="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
+                                        <path class="text-cream" stroke-width="3" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                                        <path class="text-terra" stroke-width="3" :stroke-dasharray="`${(timer/600)*100}, 100`" stroke-linecap="round" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                                    </svg>
+                                    <span class="absolute font-mono text-[11px] font-bold text-textPri" x-text="formatTime(timer)"></span>
+                                </div>
+                                <div>
+                                    <span class="font-mono text-[9px] uppercase tracking-wider text-textMuted block">CHALLENGE WINDOW</span>
+                                    <p class="text-xs text-textSec font-medium leading-tight mt-0.5">Waiting for remote path confirmation...</p>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-3 pt-2">
+                                <button @click="resetSim()" class="py-3.5 bg-terra text-white font-mono text-xs font-bold rounded-btn hover:opacity-90 transition-opacity">Confirm Receipt</button>
+                                <button @click="resetSim()" class="py-3.5 bg-surface border border-borderMuted text-textSec font-mono text-xs font-bold rounded-btn hover:bg-white hover:text-textPri transition-colors">Reverse</button>
+                            </div>
+                        </div>
+                    </template>
+
+                    <template x-if="activeScreen === 'explorer'">
+                        <div class="space-y-4 animate-fadeIn font-mono text-left bg-surface border border-borderMuted p-4 rounded-xl text-xs">
+                            <div class="flex justify-between items-center border-b border-borderMuted/60 pb-2">
+                                <span class="font-bold text-textPri">Transaction Block Overview</span>
+                                <span class="bg-success/10 text-success text-[10px] font-bold px-2 py-0.5 rounded">Success</span>
+                            </div>
+                            <div class="space-y-2 pt-1 text-[11px]">
+                                <div>
+                                    <span class="text-textMuted block text-[9px] uppercase">Transaction Type</span>
+                                    <span class="text-terra font-bold bg-terra/5 px-1.5 py-0.5 rounded inline-block mt-0.5">ProgrammableTransaction</span>
+                                </div>
+                                <div>
+                                    <span class="text-textMuted block text-[9px] uppercase">Checkpoint Sequence</span>
+                                    <span class="text-textPri">25721267</span>
+                                </div>
+                                <div>
+                                    <span class="text-textMuted block text-[9px] uppercase">Timestamp (Network Reality)</span>
+                                    <span class="text-textPri font-bold underline decoration-terra decoration-2">27.10.2025 UTC 05:27</span>
+                                </div>
+                                <div>
+                                    <span class="text-textMuted block text-[9px] uppercase">Total Gas Net Fee</span>
+                                    <span class="text-textPri">0.00100988 SUI</span>
+                                </div>
+                            </div>
+                            <button @click="activeScreen = 'execute'" class="w-full mt-2 py-2 bg-cream border border-borderMuted text-textSec text-[10px] font-bold rounded hover:bg-white text-center">
+                                &larr; Back to Challenge Terminal
+                            </button>
+                        </div>
+                    </template>
+                </div>
+
+                <div class="border-t border-borderMuted/40 pt-3 flex justify-between items-center font-mono text-[9px] text-textMuted tracking-wider">
+                    <span>CANONICAL MODEL V1.0</span>
+                    <span class="text-terra cursor-pointer hover:underline" @click="resetSim()">RESET LOGIC</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <section id="problem" class="bg-surface border-y border-borderMuted py-24">
+        <div class="max-w-4xl mx-auto px-6">
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-12 items-start">
+                <div class="md:col-span-4 space-y-3">
+                    <span class="font-mono text-xs font-bold tracking-widest text-terra block uppercase">01 / The Problem</span>
+                    <h2 class="font-display font-bold text-3xl tracking-tight text-textPri">Financial access is solved. Financial execution is broken. [cite: 352, 353]</h2>
+                </div>
+                <div class="md:col-span-8 space-y-6 text-textSec text-base sm:text-lg leading-relaxed font-normal">
+                    <p>
+                        Every day a nurse in Manila sends money home to her children. She walks into a Western Union and hands over $300 — two weeks of 12 hour shifts. <strong>$35 disappears in fees</strong> before it crosses a single border. That is four hours of her life. Taken. Before her mother sees a cent.
+                    </p>
+                    <p>
+                        She heard crypto was different. Borderless. Instant. Free. She tried it. One wrong character in a 42-digit address and $300 was gone in four seconds. No reversal. No recourse. No one to call.
+                    </p>
+                    <p class="text-textPri font-medium bg-cream/50 px-4 py-2 border-l-2 border-terra inline-block">
+                        She went back to Western Union.
+                    </p>
+                    <p>
+                        She is not one woman. She is <strong>800 million people</strong> moving <strong>$700 billion dollars</strong> across borders every year. $42 billion of it evaporates in fees. The ones who tried crypto lost even more.
+                    </p>
+                    <p>
+                        Crypto failed them. Not because the technology was wrong. Because nobody finished building it. Every protocol ever built tells you <em>how</em> to move money[cite: 439]. Not one of them guarantees where it arrives[cite: 351, 352]. Not one of them gives you your money back if something goes wrong[cite: 574, 583].
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-24">
+        <div class="max-w-4xl mx-auto px-6">
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-12 items-start">
+                <div class="md:col-span-4 space-y-3">
+                    <span class="font-mono text-xs font-bold tracking-widest text-terra block uppercase">02 / The Solution</span>
+                    <h2 class="font-display font-bold text-3xl tracking-tight text-textPri">The Intent & Outcome Network. [cite: 347]</h2>
+                </div>
+                <div class="md:col-span-8 space-y-6 text-textSec text-base sm:text-lg leading-relaxed">
+                    <p>
+                        Linaz is an intent and outcome execution network[cite: 347]. You do not interact with protocols[cite: 440]. You do not set gas[cite: 446]. You do not select chains[cite: 440]. You do not manage complex raw wallet addresses.
+                    </p>
+                    <p class="text-textPri font-medium">
+                        You simply declare what objective must be structurally true:
+                    </p>
+                    <div class="bg-surface rounded-xl border border-borderMuted p-5 font-mono text-sm text-terra shadow-sm">
+                        &ldquo;Send $300 to Mom. Keep it safe. Bring it back if she doesn't confirm.&rdquo;
+                    </div>
+                    <p>
+                        Linaz reads that intent, compiling it into a structured verification schema[cite: 375, 376]. A decentralized system of specialized solvers—acting like automated competitive racers—compete in milliseconds to capture the absolute safest and most optimal path[cite: 460, 461]. 
+                    </p>
+                    <p>
+                        The winning solver wraps the execution inside a single atomic container[cite: 470, 471, 487]. Either every parameter satisfies perfectly, or the entire state rolls back to zero[cite: 471, 492]. Value on Linaz knows where it is going, why it is going there, and how to come home if conditions fail[cite: 533].
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="how-it-works" class="bg-surface border-t border-borderMuted py-24">
+        <div class="max-w-6xl mx-auto px-6">
+            <div class="text-center max-w-3xl mx-auto mb-20 space-y-3">
+                <span class="font-mono text-xs font-bold tracking-widest text-terra uppercase block">03 / Architecture Spec</span>
+                <h2 class="font-display font-bold text-3xl sm:text-4xl text-textPri tracking-tight">Four layers of unbreakable truth and proof. [cite: 356, 357]</h2>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 font-sans">
+                <div class="p-8 bg-cream/40 rounded-card border border-borderMuted hover:border-terra/40 transition-colors space-y-4">
+                    <div class="flex justify-between items-center">
+                        <span class="font-mono text-[10px] font-bold text-terra uppercase tracking-wider">LAYER 01</span>
+                        <span class="font-mono text-[10px] text-textMuted">DECLARATIVE PRIMITIVE [cite: 349]</span>
+                    </div>
+                    <h3 class="font-display font-bold text-xl text-textPri">The Intent Model</h3>
+                    <p class="text-sm text-textSec leading-relaxed">
+                        Users sign desired world-states rather than path execution parameters[cite: 365]. Intents split into hard boolean boundaries (Constraints) and priority-based continuous scores (Objectives) handled via precise lexicographic ranking logic[cite: 368, 370, 372].
+                    </p>
+                    <div class="bg-surface rounded-lg p-3 border border-borderMuted font-mono text-[10px] text-textMuted space-y-1">
+                        <div>Constraint Families: Asset, Temporal, Protocol, Risk, Counterparty [cite: 437, 439, 440, 441, 442]</div>
+                    </div>
+                </div>
+
+                <div class="p-8 bg-cream/40 rounded-card border border-borderMuted hover:border-terra/40 transition-colors space-y-4">
+                    <div class="flex justify-between items-center">
+                        <span class="font-mono text-[10px] font-bold text-terra uppercase tracking-wider">LAYER 02</span>
+                        <span class="font-mono text-[10px] text-textMuted">OUTCOME MINING [cite: 459]</span>
+                    </div>
+                    <h3 class="font-display font-bold text-xl text-textPri">Competitive Solver Network</h3>
+                    <p class="text-sm text-textSec leading-relaxed">
+                        Solvers pre-compute complex execution topologies for intent archetypes before broadcasting[cite: 460]. Execution is entirely contained within atomic bundles, eliminating multi-hop failure or fragmentation states entirely[cite: 471, 485].
+                    </p>
+                    <div class="bg-surface rounded-lg p-3 border border-borderMuted font-mono text-[10px] text-textMuted space-y-1">
+                        <div>Target Settlement: Simple Swap (2-5s) | Cross-Chain Fluidity (5-15s) [cite: 447, 499, 501]</div>
+                    </div>
+                </div>
+
+                <div class="p-8 bg-cream/40 rounded-card border border-borderMuted hover:border-terra/40 transition-colors space-y-4">
+                    <div class="flex justify-between items-center">
+                        <span class="font-mono text-[10px] font-bold text-terra uppercase tracking-wider">LAYER 03</span>
+                        <span class="font-mono text-[10px] text-textMuted">PROGRAMMABLE MATTER [cite: 534]</span>
+                    </div>
+                    <h3 class="font-display font-bold text-xl text-textPri">Programmable Asset Layer</h3>
+                    <p class="text-sm text-textSec leading-relaxed">
+                        Tokens embed state variables (Fluid, Purposeful, In-Transit, Escrowed, Frozen, Dissolving) directly into core ledger behavior[cite: 537]. Assets understand context boundaries and can completely reverse transfers trustlessly[cite: 533, 574].
+                    </p>
+                    <div class="bg-surface rounded-lg p-3 border border-borderMuted font-mono text-[10px] text-textMuted space-y-1">
+                        <div>Cross-Chain Fluidity: Burn-and-mint mechanisms bypass structural bridge vectors[cite: 594, 595].</div>
+                    </div>
+                </div>
+
+                <div class="p-8 bg-cream/40 rounded-card border border-borderMuted hover:border-terra/40 transition-colors space-y-4">
+                    <div class="flex justify-between items-center">
+                        <span class="font-mono text-[10px] font-bold text-terra uppercase tracking-wider">LAYER 04</span>
+                        <span class="font-mono text-[10px] text-textMuted">ABSOLUTE VERIFICATION [cite: 356]</span>
+                    </div>
+                    <h3 class="font-display font-bold text-xl text-textPri">Truth and Proof System</h3>
+                    <p class="text-sm text-textSec leading-relaxed">
+                        Outcome statements require mathematical confidence mapping[cite: 616, 617]. Transitions require verified combinations of On-Chain data, cryptographic ZK circuits, staked Oracles, and Institutional Attestations[cite: 600, 602, 605, 609].
+                    </p>
+                    <div class="bg-surface rounded-lg p-3 border border-borderMuted font-mono text-[10px] text-textMuted space-y-1">
+                        <div>Fallback Parameters on Proof Deficit: Return, Freeze, or Escalate [cite: 639, 640, 641, 642]</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-24">
+        <div class="max-w-4xl mx-auto px-6">
+            <div class="text-center max-w-2xl mx-auto mb-16 space-y-2">
+                <span class="font-mono text-xs text-terra font-bold uppercase tracking-widest block">04 / Capabilities</span>
+                <h2 class="font-display font-bold text-3xl text-textPri tracking-tight">Unlocking the previously impossible.</h2>
+            </div>
+
+            <div class="space-y-4 max-w-3xl mx-auto font-mono text-xs">
+                <div class="bg-surface border border-borderMuted rounded-xl p-5 flex gap-4 shadow-sm items-center">
+                    <span class="bg-cream border border-borderMuted/80 text-terra font-bold px-2 py-1 rounded">01</span>
+                    <p class="text-textPri font-medium leading-relaxed">&ldquo;Send $300 to my mother. Return it if she doesn't confirm in 24 hours.&rdquo; [cite: 646]</p>
+                </div>
+                <div class="bg-surface border border-borderMuted rounded-xl p-5 flex gap-4 shadow-sm items-center">
+                    <span class="bg-cream border border-borderMuted/80 text-terra font-bold px-2 py-1 rounded">02</span>
+                    <p class="text-textPri font-medium leading-relaxed">&ldquo;Keep my loan healthy through this volatile period. Do whatever it takes.&rdquo; [cite: 659, 660]</p>
+                </div>
+                <div class="bg-surface border border-borderMuted rounded-xl p-5 flex gap-4 shadow-sm items-center">
+                    <span class="bg-cream border border-borderMuted/80 text-terra font-bold px-2 py-1 rounded">03</span>
+                    <p class="text-textPri font-medium leading-relaxed">&ldquo;Move my savings to wherever it earns the best yield. Pull it back if the rate drops below 8%.&rdquo;</p>
+                </div>
+                <div class="bg-surface border border-borderMuted rounded-xl p-5 flex gap-4 shadow-sm items-center">
+                    <span class="bg-cream border border-borderMuted/80 text-terra font-bold px-2 py-1 rounded">04</span>
+                    <p class="text-textPri font-medium leading-relaxed">&ldquo;Rebalance my portfolio to 60/40 by end of day. I don't care how.&rdquo; [cite: 444]</p>
+                </div>
+                <div class="bg-surface border border-borderMuted rounded-xl p-5 flex gap-4 shadow-sm items-center">
+                    <span class="bg-cream border border-borderMuted/80 text-terra font-bold px-2 py-1 rounded">05</span>
+                    <p class="text-textPri font-medium leading-relaxed">&ldquo;Lend this money for protocol development only. It cannot be used for anything else until the work is proven delivered.&rdquo; [cite: 553, 634]</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="bg-surface border-y border-borderMuted py-24">
+        <div class="max-w-6xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-12 gap-16">
+            
+            <div class="lg:col-span-6 space-y-6">
+                <span class="font-mono text-xs font-bold tracking-widest text-terra block uppercase">05 / Timing Realities</span>
+                <h3 class="font-display font-bold text-3xl tracking-tight">The convergence criteria.</h3>
+                <div class="space-y-4 text-sm text-textSec leading-relaxed">
+                    <p>
+                        <strong>Cryptographic Verification Scaling:</strong> Zero-knowledge proof primitives have matured to a production baseline where evaluating high-dimensional outcome parameters can happen trustlessly without performance constraints[cite: 602, 603].
+                    </p>
+                    <p>
+                        <strong>Localized Intent Validation:</strong> Early proof systems like UniswapX and CoW Protocol confirmed the market demand for isolated intent execution paths—Linaz completely generalizes this abstraction layer across systemic financial states[cite: 435, 436, 444, 452].
+                    </p>
+                    <p>
+                        <strong>Native Cross-Chain Topologies:</strong> Cross-chain communication frameworks have advanced past vulnerable multi-signature bridge nodes to enable secure burn-and-mint settlement patterns[cite: 593, 594, 595].
+                    </p>
+                </div>
+            </div>
+
+            <div class="lg:col-span-6 space-y-6 lg:border-l lg:border-borderMuted lg:pl-16">
+                <span class="font-mono text-xs font-bold tracking-widest text-terra block uppercase">06 / Total Target Market</span>
+                <h3 class="font-display font-bold text-3xl tracking-tight">A world built beyond the standard niche.</h3>
+                
+                <div class="grid grid-cols-2 gap-4 font-mono">
+                    <div class="bg-cream/50 border border-borderMuted p-4 rounded-xl">
+                        <div class="text-2xl font-bold text-textPri">$700B</div>
+                        <div class="text-[10px] text-textMuted mt-1 uppercase tracking-wider">Annual Remittance Flows</div>
+                    </div>
+                    <div class="bg-cream/50 border border-borderMuted p-4 rounded-xl">
+                        <div class="text-2xl font-bold text-textPri">800M</div>
+                        <div class="text-[10px] text-textMuted mt-1 uppercase tracking-wider">Active Cross-Border Senders</div>
+                    </div>
+                    <div class="bg-cream/50 border border-borderMuted p-4 rounded-xl">
+                        <div class="text-2xl font-bold text-textPri">$42B</div>
+                        <div class="text-[10px] text-textMuted mt-1 uppercase tracking-wider">Lost System Fees Annually</div>
+                    </div>
+                    <div class="bg-cream/50 border border-borderMuted p-4 rounded-xl">
+                        <div class="text-2xl font-bold text-textPri">1.4B</div>
+                        <div class="text-[10px] text-textMuted mt-1 uppercase tracking-wider">Globally Unbanked Individuals</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-24 max-w-6xl mx-auto px-6 space-y-12">
+        <div class="text-center max-w-xl mx-auto space-y-2">
+            <span class="font-mono text-xs text-terra font-bold uppercase tracking-widest block">07 / Network Landscape</span>
+            <h2 class="font-display font-bold text-3xl text-textPri tracking-tight">Uncompromising feature boundaries.</h2>
+        </div>
+
+        <div class="overflow-x-auto rounded-card border border-borderMuted bg-surface shadow-card custom-scrollbar">
+            <table class="w-full text-left border-collapse font-mono text-xs">
+                <thead>
+                    <tr class="border-b border-borderMuted bg-cream/30">
+                        <th class="p-5 font-bold text-textPri">System Target Capability</th>
+                        <th class="p-5 font-bold text-terra bg-terra/5 text-center">Linaz</th>
+                        <th class="p-5 font-bold text-textMuted text-center">Uniswap</th>
+                        <th class="p-5 font-bold text-textMuted text-center">CoW Protocol</th>
+                        <th class="p-5 font-bold text-textMuted text-center">Anoma</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-borderMuted/60">
+                    <tr class="hover:bg-cream/20 transition-colors">
+                        <td class="p-5 font-medium text-textPri">General outcome execution [cite: 347]</td>
+                        <td class="p-5 text-center bg-terra/5 text-terra font-bold text-base">&bull;</td>
+                        <td class="p-5 text-center text-textMuted">&mdash;</td>
+                        <td class="p-5 text-center text-textMuted">&mdash;</td>
+                        <td class="p-5 text-center text-textMuted">&mdash;</td>
+                    </tr>
+                    <tr class="hover:bg-cream/20 transition-colors">
+                        <td class="p-5 font-medium text-textPri">Programmable asset behavior [cite: 532, 533]</td>
+                        <td class="p-5 text-center bg-terra/5 text-terra font-bold text-base">&bull;</td>
+                        <td class="p-5 text-center text-textMuted">&mdash;</td>
+                        <td class="p-5 text-center text-textMuted">&mdash;</td>
+                        <td class="p-5 text-center text-textMuted">&mdash;</td>
+                    </tr>
+                    <tr class="hover:bg-cream/20 transition-colors">
+                        <td class="p-5 font-medium text-textPri">Natural language intents [cite: 664]</td>
+                        <td class="p-5 text-center bg-terra/5 text-terra font-bold text-base">&bull;</td>
+                        <td class="p-5 text-center text-textMuted">&mdash;</td>
+                        <td class="p-5 text-center text-textMuted">&mdash;</td>
+                        <td class="p-5 text-center text-textMuted">&mdash;</td>
+                    </tr>
+                    <tr class="hover:bg-cream/20 transition-colors">
+                        <td class="p-5 font-medium text-textPri">Reversible transfers [cite: 574, 583]</td>
+                        <td class="p-5 text-center bg-terra/5 text-terra font-bold text-base">&bull;</td>
+                        <td class="p-5 text-center text-textMuted">&mdash;</td>
+                        <td class="p-5 text-center text-textMuted">&mdash;</td>
+                        <td class="p-5 text-center text-textMuted">&mdash;</td>
+                    </tr>
+                    <tr class="hover:bg-cream/20 transition-colors">
+                        <td class="p-5 font-medium text-textPri">Cross-chain without bridge vector [cite: 593, 594]</td>
+                        <td class="p-5 text-center bg-terra/5 text-terra font-bold text-base">&bull;</td>
+                        <td class="p-5 text-center text-textMuted">&mdash;</td>
+                        <td class="p-5 text-center text-textMuted">&mdash;</td>
+                        <td class="p-5 text-center text-textMuted">&mdash;</td>
+                    </tr>
+                    <tr class="hover:bg-cream/20 transition-colors">
+                        <td class="p-5 font-medium text-textPri">Built for non-crypto users [cite: 667]</td>
+                        <td class="p-5 text-center bg-terra/5 text-terra font-bold text-base">&bull;</td>
+                        <td class="p-5 text-center text-textMuted">&mdash;</td>
+                        <td class="p-5 text-center text-textMuted">&mdash;</td>
+                        <td class="p-5 text-center text-textMuted">&mdash;</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <section class="bg-surface border-t border-borderMuted py-24">
+        <div class="max-w-6xl mx-auto px-6 grid grid-cols-1 md:grid-cols-12 gap-16">
+            
+            <div class="md:col-span-5 space-y-6">
+                <span class="font-mono text-xs font-bold tracking-widest text-terra block uppercase">08 / Matrix Status</span>
+                <h3 class="font-display font-bold text-2xl tracking-tight text-textPri">Architecture Matrix Progress</h3>
+                
+                <div class="space-y-2.5 font-mono text-xs">
+                    <template x-for="item in [
+                        { name: 'Intent specification language', done: true },
+                        { name: 'Core data model', done: true },
+                        { name: 'Constraint taxonomy', done: true },
+                        { name: 'Objective function model', done: true },
+                        { name: 'Solver network architecture', done: true },
+                        { name: 'Programmable asset states', done: true },
+                        { name: 'Truth and proof system', done: true },
+                        { name: 'Meta-intent layer', done: true },
+                        { name: 'Governance model', done: true },
+                        { name: 'Smart contracts', done: false },
+                        { name: 'Testnet deployment', done: false }
+                    ]">
+                        <div class="flex justify-between items-center py-2.5 border-b border-borderMuted/40 last:border-none">
+                            <span class="text-textSec" x-text="item.name"></span>
+                            <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded" 
+                                  :class="item.done ? 'bg-success/10 text-success' : 'bg-terra/10 text-terra animate-pulse'"
+                                  x-text="item.done ? 'Designed' : 'In Development'"></span>
+                        </div>
+                    </template>
+                </div>
+            </div>
+
+            <div class="md:col-span-7 space-y-6 md:border-l md:border-borderMuted md:pl-16">
+                <span class="font-mono text-xs font-bold tracking-widest text-terra block uppercase">09 / Protocol Promises</span>
+                <h3 class="font-display font-bold text-2xl tracking-tight text-textPri">Core Architectural Guarantees [cite: 354]</h3>
+                
+                <div class="space-y-6 font-sans text-sm text-textSec leading-relaxed">
+                    <div>
+                        <h4 class="font-display font-bold text-base text-textPri mb-1">Truth and Proof [cite: 355]</h4>
+                        <p>Every single outcome claim, condition validation, and asset state shift must be mathematically verifiable on-chain[cite: 356]. Lying is designed to be maximally expensive rather than just structurally difficult[cite: 613].</p>
+                    </div>
+                    <div>
+                        <h4 class="font-display font-bold text-base text-textPri mb-1">Outcomes over Instructions [cite: 458]</h4>
+                        <p>Users establish absolute target destinations; the background infrastructure assumes the task of mapping paths[cite: 350]. Friction and computational complexity are pushed entirely onto the hardware solver nodes[cite: 460].</p>
+                    </div>
+                    <div>
+                        <h4 class="font-display font-bold text-base text-textPri mb-1">Atomic Execution Limits [cite: 484, 485]</h4>
+                        <p>Every transaction set evaluates completely to success or reverts entirely back to its starting state[cite: 471, 485]. There are no permanent half-executed states or collateral capital traps[cite: 486].</p>
+                    </div>
+                    <div>
+                        <h4 class="font-display font-bold text-base text-textPri mb-1">Value with Agency [cite: 532]</h4>
+                        <p>Ecosystem tokens act as programmable entities rather than inert data rows[cite: 531, 532, 534]. They store historical boundaries, enforce specific utilization rules, and track safety policies natively[cite: 533].</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer id="connect" class="py-24 text-center border-t border-borderMuted bg-cream">
+        <div class="max-w-3xl mx-auto px-6 space-y-8">
+            <span class="font-mono text-xs text-terra font-bold uppercase tracking-widest bg-terra/10 px-3 py-1.5 rounded-full">
+                Origin Framework: Lusaka, Zambia
+            </span>
+            <h2 class="font-display font-bold text-3xl sm:text-5xl text-textPri tracking-tight leading-tight">
+                Built from the continent that needs this infrastructure more than anywhere else on earth.
+            </h2>
+            <p class="text-textSec text-sm sm:text-base max-w-xl mx-auto leading-relaxed font-sans">
+                Currently optimizing pre-testnet environments. We are actively seeking technical co-founders, protocol partners, and developers intent on building resilient settlement networks.
+            </p>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-6 max-w-2xl mx-auto font-mono text-xs text-left">
+                <a href="mailto:gabychancer357@gmail.com" class="p-5 bg-surface border border-borderMuted rounded-card shadow-sm hover:border-terra transition-colors group block">
+                    <span class="text-textMuted uppercase block text-[9px] mb-1 tracking-wider">ENGINEERING EMAIL</span>
+                    <span class="text-textPri font-bold break-all group-hover:text-terra transition-colors">gabychancer357@gmail.com</span>
+                </a>
+                <a href="https://wa.me/260974383918" target="_blank" rel="noreferrer" class="p-5 bg-surface border border-borderMuted rounded-card shadow-sm hover:border-terra transition-colors group block">
+                    <span class="text-textMuted uppercase block text-[9px] mb-1 tracking-wider">WHATSAPP DIRECT</span>
+                    <span class="text-textPri font-bold group-hover:text-terra transition-colors">+260 974 383 918</span>
+                </a>
+                <a href="https://t.me/Shukoevic357" target="_blank" rel="noreferrer" class="p-5 bg-surface border border-borderMuted rounded-card shadow-sm hover:border-terra transition-colors group block">
+                    <span class="text-textMuted uppercase block text-[9px] mb-1 tracking-wider">TELEGRAM NODE</span>
+                    <span class="text-textPri font-bold group-hover:text-terra transition-colors">t.me/Shukoevic357</span>
+                </a>
+            </div>
+
+            <div class="pt-16 text-center font-mono text-[10px] text-textMuted space-y-1 tracking-wider">
+                <p>&copy; 2026 Linaz Protocol. Systems Architected with Absolute Constraints.</p>
+                <p class="text-terra">Linaz. Value that knows what it's supposed to do. [cite: 533]</p>
+            </div>
+        </div>
+    </footer>
 
 </body>
-  </html>
-  
+</html>
