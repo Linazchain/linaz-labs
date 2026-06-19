@@ -154,7 +154,13 @@ If you are a protocol team who wants to be the execution layer behind inevitable
 
 ## Contact
 
-*Links and contact details coming soon.*
+email: gabychancer357@gmail.com
+
+whatsapp: +260974383918
+
+telegram: https://t.me/Shukoevic357 
+
+
 
 ---
 
