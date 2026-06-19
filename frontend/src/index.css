@@ -3,4 +3,14 @@
 @tailwind utilities;
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
-body { background: #000; color: #fff; font-family: monospace; }
+
+body {
+  background: #F5F0E8;
+  color: #2C2A27;
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 300;
+  -webkit-font-smoothing: antialiased;
+}
+
+.font-display { font-family: 'Syne', sans-serif; }
+.font-mono    { font-family: 'DM Mono', monospace; }

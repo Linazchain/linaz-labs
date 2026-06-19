@@ -1,12 +1,12 @@
 import 'dotenv/config'
-import express   from 'express'
-import cors      from 'cors'
+import express from 'express'
+import cors    from 'cors'
 import { compileIntent } from './compiler/intentCompiler'
 import { solveIntent }   from './solver/solverEngine'
-import { startMonitor }  from './monitor/reversalMonitor'
 
 const app = express()
-app.use(cors())
+
+app.use(cors({ origin: '*' }))
 app.use(express.json())
 
 app.post('/compile', async (req, res) => {
@@ -21,8 +21,8 @@ app.post('/compile', async (req, res) => {
 
 app.post('/solve', async (req, res) => {
   try {
-    const { intent, signer } = req.body
-    const result = await solveIntent(intent, signer)
+    const { intent } = req.body
+    const result = await solveIntent(intent, null)
     res.json(result)
   } catch (e: any) {
     res.status(500).json({ error: e.message })

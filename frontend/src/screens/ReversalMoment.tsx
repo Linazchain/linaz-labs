@@ -1,29 +1,61 @@
 import { useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { SolverResult } from '../App'
+import { useCurrentAccount } from '@mysten/dapp-kit'
+import type { SolverResult } from '../App'
+import { reverseFunds } from '../lib/chain'
 
 interface Props {
-  result:  SolverResult
+  result: SolverResult
+  onReversed: () => void
   onReset: () => void
 }
 
-export default function ReversalMoment({ result, onReset }: Props) {
+export default function ReversalMoment({ result, onReversed, onReset }: Props) {
+  const account = useCurrentAccount()
   const [phase, setPhase] = useState<'pause' | 'label' | 'arc' | 'complete'>('pause')
+  const [reverseHash, setReverseHash] = useState<string | null>(null)
+  const [error, setError] = useState('')
+
   const reversed = !result.success
 
   useEffect(() => {
-    const t1 = setTimeout(() => setPhase('label'),    1000)
-    const t2 = setTimeout(() => setPhase('arc'),      2500)
-    const t3 = setTimeout(() => setPhase('complete'), 4500)
-    return () => [t1, t2, t3].forEach(clearTimeout)
-  }, [])
+    const t1 = setTimeout(() => setPhase('label'), 1000)
+    const t2 = setTimeout(async () => {
+      setPhase('arc')
+      if (reversed && account?.address) {
+        try {
+          const digest = await reverseFunds(account.address, 0.5)
+          setReverseHash(digest)
+          onReversed()
+        } catch (e: any) {
+          setError(e?.message || 'Reversal failed')
+        }
+      } else if (reversed) {
+        onReversed()
+      }
+    }, 2500)
+    const t3 = setTimeout(() => setPhase('complete'), 5000)
+
+    return () => {
+      clearTimeout(t1)
+      clearTimeout(t2)
+      clearTimeout(t3)
+    }
+  }, [account, reversed, onReversed])
+
+  const finalHash = reverseHash || result.transactionHash
+  const explorerUrl = 'https://suiscan.xyz/testnet/tx/' + finalHash
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center px-6 text-center">
+    <div className="w-full max-w-md mx-auto px-6 pt-8 pb-12 flex flex-col items-center justify-center text-center">
       <AnimatePresence mode="wait">
-
         {phase === 'pause' && (
-          <motion.div key="pause" exit={{ opacity: 0 }} className="w-2 h-2 bg-zinc-700 rounded-full" />
+          <motion.div
+            key="pause"
+            exit={{ opacity: 0, scale: 0.8 }}
+            transition={{ duration: 0.4 }}
+            className="w-3 h-3 rounded-full bg-textMuted"
+          />
         )}
 
         {phase !== 'pause' && (
@@ -31,12 +63,17 @@ export default function ReversalMoment({ result, onReset }: Props) {
             key="content"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="space-y-8 max-w-md"
+            transition={{ duration: 0.6 }}
+            className="w-full max-w-sm space-y-8"
           >
             <motion.p
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className={`uppercase tracking-widest text-sm ${reversed ? 'text-red-400' : 'text-green-400'}`}
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+              className={
+                'font-mono text-xs uppercase tracking-widest ' +
+                (reversed ? 'text-red-400' : 'text-success')
+              }
             >
               {reversed ? 'Conditions Not Met' : 'Conditions Met'}
             </motion.p>
@@ -45,52 +82,75 @@ export default function ReversalMoment({ result, onReset }: Props) {
               <motion.p
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                className="text-zinc-400"
+                transition={{ duration: 0.6 }}
+                className="font-display text-3xl font-bold text-textPri"
               >
-                {reversed ? '10 SUI returning to origin...' : 'Funds released to recipient.'}
+                {reversed ? 'SUI returning on-chain.' : 'Funds released.'}
               </motion.p>
             ) : null}
 
-            {(phase === 'arc' || phase === 'complete') && reversed && (
-              <motion.div
-                initial={{ scaleX: 0 }}
-                animate={{ scaleX: 1 }}
-                transition={{ duration: 1.5, ease: 'easeInOut' }}
-                className="w-full h-px bg-gradient-to-r from-red-900 via-red-400 to-transparent origin-right"
-              />
-            )}
+            {error ? (
+              <p className="text-red-400 text-xs font-mono break-all">{error}</p>
+            ) : null}
 
-            {phase === 'complete' && (
-              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-4">
-                <p className="text-white text-lg">Complete</p>
-                <p className="text-zinc-500 text-sm">
-                  {reversed
-                    ? `10 SUI returned to ${result.transactionHash.slice(0, 8)}...`
-                    : `Funds delivered. ${result.transactionHash.slice(0, 8)}...`}
+            {(phase === 'arc' || phase === 'complete') && reversed ? (
+              <div className="relative h-16 flex items-center justify-center">
+                <motion.div
+                  initial={{ scaleX: 0, originX: 1 }}
+                  animate={{ scaleX: 1 }}
+                  transition={{ duration: 1.8, ease: 'easeInOut' }}
+                  className="w-full h-0.5 bg-gradient-to-l from-red-400 to-transparent"
+                />
+                <motion.div
+                  initial={{ x: 80, opacity: 0 }}
+                  animate={{ x: 0, opacity: 1 }}
+                  transition={{ duration: 1.8, ease: 'easeInOut' }}
+                  className="absolute right-0 w-3 h-3 rounded-full bg-red-400"
+                />
+              </div>
+            ) : null}
+
+            {phase === 'complete' ? (
+              <motion.div
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6 }}
+                className="space-y-6"
+              >
+                <div className="bg-surface rounded-card shadow-card p-5 text-left">
+                  <p className="text-textMuted text-xs uppercase tracking-widest mb-2 font-mono">
+                    {reversed ? 'Reversal Transaction' : 'Complete'}
+                  </p>
+                  <p className="text-textSec text-sm font-mono break-all mb-3">
+                    {finalHash.slice(0, 24)}...
+                  </p>
+                  <a
+                    href={explorerUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-terra text-xs font-medium"
+                  >
+                    View on Sui Explorer
+                  </a>
+                </div>
+
+                <p className="text-textMuted text-sm leading-relaxed">
+                  No loss. No intervention. No customer service.
+                  <br />
+                  <span className="text-textSec font-medium">Just the terms you set.</span>
                 </p>
-                
-                  href={`https://suiexplorer.com/txblock/${result.transactionHash}?network=testnet`}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="block text-zinc-600 text-xs hover:text-white"
-                >
-                  View on Sui Explorer ↗
-                </a>
-                <p className="text-zinc-600 text-xs mt-8 leading-relaxed">
-                  No loss. No intervention. No customer service.<br />
-                  Just the terms you set.
-                </p>
+
                 <button
                   onClick={onReset}
-                  className="mt-6 px-6 py-2 border border-zinc-800 text-zinc-600 uppercase tracking-widest text-xs hover:border-zinc-600 hover:text-zinc-300 transition-colors"
+                  className="w-full py-4 bg-surface border border-border text-textSec font-medium rounded-btn text-sm hover:border-terra hover:text-terra transition-colors"
+                  style={{ minHeight: '56px' }}
                 >
                   New Intent
                 </button>
               </motion.div>
-            )}
+            ) : null}
           </motion.div>
         )}
-
       </AnimatePresence>
     </div>
   )

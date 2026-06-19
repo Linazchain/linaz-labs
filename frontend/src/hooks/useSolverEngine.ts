@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { CompiledIntent } from '../../../backend/src/compiler/intentCompiler'
+import { CompiledIntent } from '../App'
 import { SolverResult }   from '../App'
 
 export function useSolverEngine() {

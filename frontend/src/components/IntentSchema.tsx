@@ -1,47 +1,33 @@
 import { motion } from 'framer-motion'
-import { CompiledIntent } from '../../../backend/src/compiler/intentCompiler'
+import { CompiledIntent } from '../App'
 
 interface Props { intent: CompiledIntent; step: number }
 
-const Row = ({ label, value, visible }: { label: string; value: string; visible: boolean }) => (
-  <motion.div
-    initial={{ opacity: 0, x: -10 }}
-    animate={{ opacity: visible ? 1 : 0, x: visible ? 0 : -10 }}
-    className="flex gap-4 text-sm mb-2"
-  >
-    <span className="text-zinc-600 w-24 shrink-0">{label}</span>
-    <span className="text-white">{value} <span className="text-zinc-600">✦</span></span>
-  </motion.div>
-)
+function SchemaCard({ label, value, visible }: { label: string; value: string; visible: boolean }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 12 }}
+      animate={{ opacity: visible ? 1 : 0, y: visible ? 0 : 12 }}
+      transition={{ duration: 0.5 }}
+      className="bg-surface rounded-card shadow-card p-4 flex items-center gap-4 border-l-4 border-terra"
+    >
+      <div>
+        <p className="text-textMuted text-xs uppercase tracking-widest font-mono mb-1">{label}</p>
+        <p className="text-textPri text-sm font-medium">{value}</p>
+      </div>
+    </motion.div>
+  )
+}
 
 export default function IntentSchema({ intent, step }: Props) {
+  const timeCondition = intent.conditions.find(c => c.type === 'time')
   return (
-    <div className="space-y-6">
-      <div>
-        <p className="text-zinc-700 text-xs uppercase tracking-widest mb-3">constraints {'{'}</p>
-        <div className="pl-4">
-          <Row label="asset"    value={`${intent.amount} ${intent.currency}`} visible={step >= 2} />
-          <Row label="temporal" value={intent.conditions.find(c => c.type === 'time')?.value + 's' ?? '—'} visible={step >= 2} />
-          <Row label="risk"     value="escrow + reversal"                     visible={step >= 3} />
-        </div>
-        <p className="text-zinc-700 text-xs mt-1">{'}'}</p>
-      </div>
-      <div>
-        <p className="text-zinc-700 text-xs uppercase tracking-widest mb-3">objective {'{'}</p>
-        <div className="pl-4">
-          <Row label="rank 1" value={intent.objective.primary.toUpperCase()}   visible={step >= 3} />
-          <Row label="rank 2" value={intent.objective.secondary.toUpperCase()} visible={step >= 3} />
-        </div>
-        <p className="text-zinc-700 text-xs mt-1">{'}'}</p>
-      </div>
-      <div>
-        <p className="text-zinc-700 text-xs uppercase tracking-widest mb-3">proof {'{'}</p>
-        <div className="pl-4">
-          <Row label="type"   value="CONFIRMATION" visible={step >= 4} />
-          <Row label="window" value="600s"         visible={step >= 4} />
-        </div>
-        <p className="text-zinc-700 text-xs mt-1">{'}'}</p>
-      </div>
+    <div className="space-y-3">
+      <SchemaCard label="Asset"       value={intent.amount + ' ' + intent.currency}              visible={step >= 2} />
+      <SchemaCard label="Recipient"   value={intent.recipient}                                   visible={step >= 2} />
+      <SchemaCard label="Window"      value={(timeCondition?.value ?? 600) + 's challenge window'} visible={step >= 3} />
+      <SchemaCard label="Objective"   value={intent.objective.primary + ' first'}                visible={step >= 3} />
+      <SchemaCard label="Proof type"  value="Recipient confirmation"                             visible={step >= 4} />
     </div>
   )
 }
